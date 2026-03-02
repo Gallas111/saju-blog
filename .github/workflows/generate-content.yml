@@ -2,8 +2,12 @@ name: Generate Blog Content
 
 on:
   schedule:
-    # 매일 01:00 KST (16:00 UTC 전날)
-    - cron: "0 16 * * *"
+    # 09:00 KST (00:00 UTC) - 1번째 포스트
+    - cron: "0 0 * * *"
+    # 13:00 KST (04:00 UTC) - 2번째 포스트
+    - cron: "0 4 * * *"
+    # 17:00 KST (08:00 UTC) - 3번째 포스트
+    - cron: "0 8 * * *"
   workflow_dispatch:
 
 permissions:
@@ -25,7 +29,7 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Generate posts
+      - name: Generate post
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
@@ -48,6 +52,6 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add content/posts/
           DATE=$(date +%Y-%m-%d)
-          COUNT=$(git status --porcelain content/posts/ | wc -l)
-          git commit -m "feat: AI 자동 블로그 포스트 추가 (${DATE}, ${COUNT}개)"
+          HOUR=$(TZ=Asia/Seoul date +%H:%M)
+          git commit -m "feat: AI 자동 블로그 포스트 추가 (${DATE} ${HOUR})"
           git push

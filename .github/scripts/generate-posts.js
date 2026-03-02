@@ -7,7 +7,7 @@ const { selectKeywords } = require("./keyword-research");
 const { callGemini } = require("./utils/gemini");
 const { writeMdxFile } = require("./utils/mdx-writer");
 
-const POST_COUNT = 3;
+const POST_COUNT = 1;
 
 async function generatePost(keyword) {
   const today = new Date().toISOString().split("T")[0];
