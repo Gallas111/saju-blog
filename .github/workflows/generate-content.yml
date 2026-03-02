@@ -36,17 +36,26 @@ jobs:
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
         run: node .github/scripts/generate-posts.js
 
-      - name: Check for new files
-        id: check
+      - name: Get new post info
+        id: post-info
         run: |
-          if [ -n "$(git status --porcelain content/posts/)" ]; then
+          NEW_FILES=$(git status --porcelain content/posts/ | grep "^??" | awk '{print $2}')
+          if [ -n "$NEW_FILES" ]; then
             echo "has_changes=true" >> $GITHUB_OUTPUT
+            FILE=$(echo "$NEW_FILES" | head -1)
+            TITLE=$(grep '^title:' "$FILE" | sed 's/title: *"//;s/"$//')
+            SLUG=$(grep '^slug:' "$FILE" | sed 's/slug: *"//;s/"$//')
+            CATEGORY=$(grep '^category:' "$FILE" | sed 's/category: *"//;s/"$//')
+            echo "title=$TITLE" >> $GITHUB_OUTPUT
+            echo "slug=$SLUG" >> $GITHUB_OUTPUT
+            echo "category=$CATEGORY" >> $GITHUB_OUTPUT
+            echo "url=https://www.sajubokastory.com/blog/$SLUG" >> $GITHUB_OUTPUT
           else
             echo "has_changes=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Commit and push
-        if: steps.check.outputs.has_changes == 'true'
+        if: steps.post-info.outputs.has_changes == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -55,3 +64,40 @@ jobs:
           HOUR=$(TZ=Asia/Seoul date +%H:%M)
           git commit -m "feat: AI 자동 블로그 포스트 추가 (${DATE} ${HOUR})"
           git push
+
+      - name: Send Telegram notification
+        if: steps.post-info.outputs.has_changes == 'true'
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          TITLE="${{ steps.post-info.outputs.title }}"
+          CATEGORY="${{ steps.post-info.outputs.category }}"
+          URL="${{ steps.post-info.outputs.url }}"
+          DATE=$(TZ=Asia/Seoul date +"%Y-%m-%d %H:%M")
+
+          MESSAGE=$(cat <<EOF
+          📝 새 블로그 포스트 발행!
+
+          제목: ${TITLE}
+          카테고리: ${CATEGORY}
+          시간: ${DATE}
+
+          🔗 ${URL}
+          EOF
+          )
+
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "{\"chat_id\":\"${TELEGRAM_CHAT_ID}\",\"text\":$(echo "$MESSAGE" | jq -Rs .)}"
+
+      - name: Send Telegram failure notification
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          DATE=$(TZ=Asia/Seoul date +"%Y-%m-%d %H:%M")
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "{\"chat_id\":\"${TELEGRAM_CHAT_ID}\",\"text\":\"❌ 블로그 포스트 생성 실패\\n시간: ${DATE}\\n\\nGitHub Actions에서 확인해주세요.\"}"
