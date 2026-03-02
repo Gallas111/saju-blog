@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <radialGradient id="ballGrad" cx="38%" cy="32%" r="65%">
+      <stop offset="0%" stop-color="#9b7ee0"/>
+      <stop offset="60%" stop-color="#4a2d8a"/>
+      <stop offset="100%" stop-color="#1a0f35"/>
+    </radialGradient>
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#131028"/>
+      <stop offset="100%" stop-color="#080c18"/>
+    </radialGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="0.8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- 배경 -->
+  <rect width="32" height="32" rx="7" fill="url(#bgGrad)"/>
+
+  <!-- 골드 테두리 -->
+  <rect width="32" height="32" rx="7" fill="none" stroke="#c9a84c" stroke-width="0.8" opacity="0.5"/>
+
+  <!-- 수정구 본체 -->
+  <circle cx="16" cy="13.5" r="9" fill="url(#ballGrad)"/>
+
+  <!-- 수정구 골드 링 -->
+  <circle cx="16" cy="13.5" r="9" fill="none" stroke="#c9a84c" stroke-width="0.7" opacity="0.7"/>
+
+  <!-- 수정구 하이라이트 -->
+  <ellipse cx="13" cy="10.5" rx="2.8" ry="1.8" fill="white" opacity="0.12" transform="rotate(-20 13 10.5)"/>
+
+  <!-- 중앙 펜 아이콘 (블로그 구분) -->
+  <text x="16" y="17" text-anchor="middle" font-size="7" fill="#e8c96a" font-family="serif" filter="url(#glow)" opacity="0.95">✎</text>
+
+  <!-- 받침대 -->
+  <path d="M10.5 22.5 Q16 24.5 21.5 22.5 L20.5 26 Q16 27.2 11.5 26 Z" fill="#c9a84c" opacity="0.75"/>
+  <ellipse cx="16" cy="22.5" rx="5.5" ry="1.2" fill="#c9a84c" opacity="0.4"/>
+</svg>

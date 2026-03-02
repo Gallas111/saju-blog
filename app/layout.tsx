@@ -21,6 +21,13 @@ export const metadata: Metadata = {
   description:
     "사주, 운세, 꿈 해몽, 타로, 궁합, 일주론 등 운세 정보를 매일 업데이트합니다. AI 기반 사주 분석 서비스 사주보까의 공식 블로그.",
   metadataBase: new URL("https://www.sajubokastory.com"),
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    apple: [{ url: "/apple-icon" }],
+  },
   openGraph: {
     type: "website",
     locale: "ko_KR",
