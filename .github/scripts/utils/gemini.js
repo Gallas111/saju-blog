@@ -2,7 +2,7 @@
  * Gemini API wrapper for content generation
  */
 
-const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent";
+const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
 async function callGemini(prompt, { apiKey, temperature = 0.8, maxTokens = 8192 } = {}) {
   const key = apiKey || process.env.GEMINI_API_KEY;
