@@ -1,0 +1,69 @@
+name: Health Check Bot
+
+on:
+  schedule:
+    - cron: '0 16 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: content-pipeline
+  cancel-in-progress: false
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Health Check
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
+        run: npx tsx scripts/health-check.ts
+
+      - name: Commit fixes if any
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global core.quotePath false
+          git add .
+          git diff --staged --quiet && echo "No fixes needed" && exit 0
+          git commit -m "fix(health-check): auto-fix broken images, links, and MDX syntax"
+
+          if ! git pull --rebase origin main; then
+            echo "Rebase conflict, resolving..."
+            git diff --name-only --diff-filter=U -z | while IFS= read -r -d '' file; do
+              git checkout --theirs "$file"
+              git add "$file"
+            done
+            GIT_EDITOR=true git rebase --continue
+          fi
+
+          git push origin main
+
+      - name: Notify Telegram
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            EMOJI="✅"
+            MSG="Health check completed successfully"
+          else
+            EMOJI="❌"
+            MSG="Health check failed - please review logs"
+          fi
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+            -d text="${EMOJI} [Saju Blog] ${MSG}" || true

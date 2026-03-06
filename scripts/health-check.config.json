@@ -1,0 +1,16 @@
+{
+  "siteUrl": "https://www.sajubokastory.com",
+  "blogPath": "/blog",
+  "contentDir": "content",
+  "contentStructure": "flat",
+  "imageDir": "public/images/posts",
+  "defaultImageDir": "public/images/defaults",
+  "limits": {
+    "maxImageFixes": 10,
+    "maxLinkFixes": 20,
+    "maxRenderFixes": 5,
+    "minImageSize": 15000,
+    "requestRetries": 2,
+    "requestTimeout": 10000
+  }
+}
