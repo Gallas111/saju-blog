@@ -1,0 +1,36 @@
+name: 3-Day Focused Growth Report
+
+on:
+  schedule:
+    # 3일마다 00:00 KST (15:00 UTC)에 실행
+    - cron: '0 15 */3 * *'
+  workflow_dispatch: # 수동 실행 가능
+
+jobs:
+  focused-report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Focused Growth Report
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GA_PROPERTY_ID: ${{ secrets.GA_PROPERTY_ID }}
+          GSC_SITE_URL: ${{ secrets.GSC_SITE_URL }}
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+          EMAIL_RECEIVER: ${{ secrets.EMAIL_RECEIVER }}
+          GOOGLE_CREDENTIALS_BASE64: ${{ secrets.GOOGLE_CREDENTIALS_BASE64 }}
+        run: |
+          echo "📊 사주보까 스토리 전담 성장 리포트 생성을 시작합니다..."
+          npm run growth:focused-report
