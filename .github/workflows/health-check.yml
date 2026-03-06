@@ -28,7 +28,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Notify Telegram (Start)
+        run: |
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+            -d text="🏥 [Saju Blog] Health check 시작..." || true
+
       - name: Run Health Check
+        id: healthcheck
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
@@ -54,16 +61,19 @@ jobs:
 
           git push origin main
 
-      - name: Notify Telegram
+      - name: Notify Telegram (Result)
         if: always()
         run: |
+          FIXES=$(git log --oneline -1 2>/dev/null | grep -c "health-check" || echo "0")
           if [ "${{ job.status }}" = "success" ]; then
-            EMOJI="✅"
-            MSG="Health check completed successfully"
+            if [ "$FIXES" -gt 0 ]; then
+              MSG="✅ [Saju Blog] Health check 완료 — 오류 수정 후 배포됨"
+            else
+              MSG="✅ [Saju Blog] Health check 완료 — 이상 없음"
+            fi
           else
-            EMOJI="❌"
-            MSG="Health check failed - please review logs"
+            MSG="❌ [Saju Blog] Health check 실패 — 로그 확인 필요"
           fi
           curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
             -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-            -d text="${EMOJI} [Saju Blog] ${MSG}" || true
+            -d text="${MSG}" || true
