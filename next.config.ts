@@ -18,6 +18,11 @@ const nextConfig: NextConfig = {
         destination: "/blog/2026-samjaetti-fortune-analysis",
         permanent: true,
       },
+      {
+        source: "/cmd_sco",
+        destination: "/",
+        permanent: false,
+      },
     ];
   },
 };

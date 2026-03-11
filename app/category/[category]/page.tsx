@@ -65,9 +65,11 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             {catEntry?.icon} {categoryName}
           </h1>
           {catEntry && (
-            <p className="text-muted">{catEntry.description}</p>
+            <p className="text-base text-muted-foreground leading-relaxed mt-2">
+              {catEntry.longDescription}
+            </p>
           )}
-          <p className="text-sm text-muted mt-1">
+          <p className="text-sm text-muted mt-2">
             총 {posts.length}개의 글
           </p>
         </section>
