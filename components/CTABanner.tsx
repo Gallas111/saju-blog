@@ -1,3 +1,11 @@
+"use client";
+
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+  }
+}
+
 interface CTABannerProps {
   label?: string;
   href?: string;
@@ -27,6 +35,15 @@ const ALL_SERVICES = [
   { name: "행운번호", href: "https://www.sajuboka.com/lucky", icon: "🍀" },
 ];
 
+function trackCTAClick(serviceName: string, href: string, category?: string) {
+  window.gtag?.("event", "cta_click", {
+    event_category: "CTA",
+    event_label: serviceName,
+    service_url: href,
+    post_category: category ?? "unknown",
+  });
+}
+
 export default function CTABanner({ label, href, category }: CTABannerProps) {
   const service = category ? SERVICE_MAP[category] : null;
   const mainLabel = label ?? service?.label ?? "내 사주 분석하기";
@@ -50,6 +67,7 @@ export default function CTABanner({ label, href, category }: CTABannerProps) {
           href={mainHref}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => trackCTAClick(mainLabel, mainHref, category)}
           className="inline-block bg-white text-purple-dark font-bold px-8 py-3 rounded-full text-lg hover:bg-gold-light hover:text-background transition-all shadow-lg hover:shadow-xl hover:scale-105"
         >
           {mainLabel}
@@ -63,6 +81,7 @@ export default function CTABanner({ label, href, category }: CTABannerProps) {
               href={svc.href}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackCTAClick(svc.name, svc.href, category)}
               className="inline-flex items-center gap-1 bg-white/15 hover:bg-white/25 text-white text-sm px-3 py-1.5 rounded-full transition-colors"
             >
               <span>{svc.icon}</span>
