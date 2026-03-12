@@ -33,15 +33,32 @@ async function generatePost(keyword) {
 9. 글 시작에 도입부, 끝에 맺음말
 10. 전문적이면서도 친근한 톤
 
+## 현재 날짜
+${today} (이 연도 기준으로 작성할 것)
+
 ## 주의사항
 - 의학적 조언이나 금전 투자 조언 금지
 - "점술은 참고 사항" 정도의 균형잡힌 시각
 - 한자 병기는 처음 등장시에만
 - 코드블록 사용 금지
+- 연도가 포함되는 내용은 반드시 현재 연도(${new Date().getFullYear()}년) 기준으로 작성
+- 절대 과거 연도(2024년, 2025년 등)의 정보를 사용하지 말 것
+- "[블로그 이름]" 같은 플레이스홀더 대신 "사주보까 스토리"를 사용할 것
 
 본문만 작성해주세요 (frontmatter 제외):`;
 
-  const content = await callGemini(prompt, { temperature: 0.8, maxTokens: 8192 });
+  let content = await callGemini(prompt, { temperature: 0.8, maxTokens: 8192 });
+
+  // 생성된 콘텐츠 검증 및 보정
+  const currentYear = new Date().getFullYear();
+  const outdatedYears = [2024, 2025].filter((y) => y < currentYear);
+  for (const year of outdatedYears) {
+    if (content.includes(`${year}년`)) {
+      console.warn(`  ⚠️ 과거 연도(${year}년) 감지 → ${currentYear}년으로 교체`);
+      content = content.replace(new RegExp(`${year}년`, "g"), `${currentYear}년`);
+    }
+  }
+  content = content.replace(/\[블로그 이름\]/g, "사주보까 스토리");
 
   return {
     title: keyword.title,

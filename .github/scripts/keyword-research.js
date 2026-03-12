@@ -85,11 +85,16 @@ ${existingSlugs.join(", ") || "없음"}
 ## 카테고리 옵션
 일주론, 꿈 해몽, 운세, 사주, 타로, 명리학, 궁합, 오행, 절기, 작명
 
+## 현재 날짜
+${new Date().toISOString().split("T")[0]} (이 연도 기준으로 작성할 것)
+
 ## 규칙
 1. 기존 슬러그와 겹치지 않는 새로운 주제
 2. 검색량이 높을 것으로 예상되는 롱테일 키워드 포함
 3. 카테고리를 다양하게 (같은 카테고리 2개 이하)
 4. 트렌드와 연관된 운세 주제면 가산점
+5. 연도가 포함되는 주제는 반드시 현재 연도(${new Date().getFullYear()}년) 기준으로 작성
+6. 절대 과거 연도(2024년, 2025년 등)를 제목이나 키워드에 사용하지 말 것
 
 ## 출력 형식 (JSON만, 설명 없이)
 \`\`\`json
@@ -124,12 +129,25 @@ ${existingSlugs.join(", ") || "없음"}
   const jsonStr = jsonMatch[1] || jsonMatch[0];
   const keywords = JSON.parse(jsonStr);
 
-  console.log(`  → ${keywords.length}개 주제 선정 완료\n`);
-  keywords.forEach((kw, i) => {
+  // 과거 연도 키워드 필터링
+  const currentYear = new Date().getFullYear();
+  const outdatedYears = [2024, 2025].filter((y) => y < currentYear);
+  const filtered = keywords.filter((kw) => {
+    for (const year of outdatedYears) {
+      if (kw.title.includes(`${year}`) || kw.slug.includes(`${year}`)) {
+        console.warn(`  ⚠️ 과거 연도(${year}) 포함 키워드 제외: ${kw.title}`);
+        return false;
+      }
+    }
+    return true;
+  });
+
+  console.log(`  → ${filtered.length}개 주제 선정 완료\n`);
+  filtered.forEach((kw, i) => {
     console.log(`  ${i + 1}. [${kw.category}] ${kw.title}`);
   });
 
-  return keywords;
+  return filtered;
 }
 
 module.exports = { selectKeywords, BASE_KEYWORDS };
