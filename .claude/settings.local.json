@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh run:*)",
+      "Bash(where gh:*)",
+      "Bash(curl:*)",
+      "Bash(node:*)",
+      "Bash(where vercel:*)",
+      "WebFetch(domain:www.sajubokastory.com)",
+      "Bash(npm run:*)",
+      "Bash(cd \"/c/Users/owner/OneDrive/바탕 화면/사이트/saju-blog\" && rm \"content/posts/2026-03-12-samjae-meaning-2024-zodiac-signs-coping-guide.mdx\")",
+      "Bash(cd \"/c/Users/owner/OneDrive/바탕 화면/사이트/saju-blog\" && sed -i 's/\\\\[블로그 이름\\\\]/사주보까 스토리/g' content/posts/2026-03-03-gapja-ilju-traits-fortune-love-compatibility.mdx content/posts/2026-03-06-saju-palja-cheongan-meaning-and-sipcheongan-sangsaeng-sanggeuk-destiny.mdx content/posts/2026-03-08-gyemyo-ilju-traits-personality-wealth-love-compatibility-deep-dive.mdx content/posts/2026-03-09-saju-zodiac-sign-by-ipchun-24jeolgi-fortune-impact.mdx content/posts/2026-03-11-fire-dream-meaning-interpretation-fortune-taemong-guide.mdx content/posts/2026-03-11-saju-12jiji-meaning-how-to-read-sangsanggeuk.mdx content/posts/2026-03-12-goyangi-dream-meaning-interpretation-fortune-taemong-guide.mdx content/posts/2026-03-10-tiger-dream-meaning-fortune-taemong-analysis-by-situation.mdx)",
+      "Bash(cd \"/c/Users/owner/OneDrive/바탕 화면/사이트/saju-blog\" && rm \"content/posts/2026-03-05-2024-tojeongbigyeol-reading-guide-new-year-fortune.mdx\")"
+    ]
+  }
+}
