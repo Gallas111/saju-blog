@@ -490,13 +490,13 @@ function fixInternalLinks(posts: PostInfo[]): void {
       if (!slugMatch) continue;
       const brokenSlug = slugMatch[1];
 
-      // Replace [text](/blog/broken-slug) with just text
-      const linkPattern = new RegExp(
-        `\\[([^\\]]*)\\]\\(\\/blog\\/${brokenSlug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\)`,
-        'g'
+      // Remove the entire line containing the broken link (list item)
+      const linePattern = new RegExp(
+        `^[ \\t]*-\\s+\\[([^\\]]*)\\]\\(\\/blog\\/${brokenSlug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\)[^\\n]*\\n?`,
+        'gm'
       );
 
-      const newContent = rawContent.replace(linkPattern, '$1');
+      const newContent = rawContent.replace(linePattern, '');
       if (newContent !== rawContent) {
         rawContent = newContent;
         modified = true;
