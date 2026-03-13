@@ -60,6 +60,9 @@ ${today} (이 연도 기준으로 작성할 것)
   }
   content = content.replace(/\[블로그 이름\]/g, "사주보까 스토리");
 
+  // 이중 헤딩 마크다운 수정 (### ### → ###)
+  content = content.replace(/^(#{1,6})\s+#{1,6}\s+/gm, "$1 ");
+
   return {
     title: keyword.title,
     slug: keyword.slug,
