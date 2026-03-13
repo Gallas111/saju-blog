@@ -32,7 +32,7 @@ export default function ShareButtons({ url, title }: ShareButtonsProps) {
         href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="w-9 h-9 flex items-center justify-center bg-card-bg border border-card-border rounded-lg text-muted hover:text-gold hover:border-gold transition-colors"
+        className="w-10 h-10 sm:w-9 sm:h-9 flex items-center justify-center bg-card-bg border border-card-border rounded-lg text-muted hover:text-gold hover:border-gold transition-colors"
         aria-label="Twitter 공유"
       >
         𝕏
@@ -41,14 +41,14 @@ export default function ShareButtons({ url, title }: ShareButtonsProps) {
         href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="w-9 h-9 flex items-center justify-center bg-card-bg border border-card-border rounded-lg text-muted hover:text-gold hover:border-gold transition-colors"
+        className="w-10 h-10 sm:w-9 sm:h-9 flex items-center justify-center bg-card-bg border border-card-border rounded-lg text-muted hover:text-gold hover:border-gold transition-colors"
         aria-label="Facebook 공유"
       >
         f
       </a>
       <button
         onClick={copyLink}
-        className="w-9 h-9 flex items-center justify-center bg-card-bg border border-card-border rounded-lg text-muted hover:text-gold hover:border-gold transition-colors cursor-pointer"
+        className="w-10 h-10 sm:w-9 sm:h-9 flex items-center justify-center bg-card-bg border border-card-border rounded-lg text-muted hover:text-gold hover:border-gold transition-colors cursor-pointer"
         aria-label="링크 복사"
       >
         🔗

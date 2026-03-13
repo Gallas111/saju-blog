@@ -82,7 +82,7 @@ export default function CTABanner({ label, href, category }: CTABannerProps) {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackCTAClick(svc.name, svc.href, category)}
-              className="inline-flex items-center gap-1 bg-white/15 hover:bg-white/25 text-white text-sm px-3 py-1.5 rounded-full transition-colors"
+              className="inline-flex items-center gap-1 bg-white/15 hover:bg-white/25 text-white text-sm px-4 py-2.5 sm:px-3 sm:py-1.5 rounded-full transition-colors"
             >
               <span>{svc.icon}</span>
               <span>{svc.name}</span>
