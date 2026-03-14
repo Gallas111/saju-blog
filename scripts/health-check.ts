@@ -463,11 +463,28 @@ async function fixImages(posts: PostInfo[]): Promise<void> {
   }
 }
 
+function buildFilenameToSlugMap(posts: PostInfo[]): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const post of posts) {
+    // Extract filename-based slug (without date prefix)
+    const basename = path.basename(post.filePath, '.mdx');
+    const filenameSlug = basename.replace(/^\d{4}-\d{2}-\d{2}-/, '');
+    if (filenameSlug !== post.slug) {
+      map.set(filenameSlug, post.slug);
+    }
+  }
+  return map;
+}
+
 function fixInternalLinks(posts: PostInfo[]): void {
   const linkIssues = issues.filter(i => i.type === 'link');
   if (linkIssues.length === 0) return;
 
   log('🔧', `Fixing ${linkIssues.length} broken link issues (limit: ${config.limits.maxLinkFixes})...`);
+
+  // Build a mapping from filename-based slugs to actual frontmatter slugs
+  const filenameToSlug = buildFilenameToSlugMap(posts);
+  const allSlugs = new Set(posts.map(p => p.slug));
 
   // Group by file for efficient processing
   const issuesByFile = new Map<string, Issue[]>();
@@ -490,7 +507,23 @@ function fixInternalLinks(posts: PostInfo[]): void {
       if (!slugMatch) continue;
       const brokenSlug = slugMatch[1];
 
-      // Remove the entire line containing the broken link (list item)
+      // Strategy 1: Try to find the correct slug via filename→slug mapping
+      const correctSlug = filenameToSlug.get(brokenSlug);
+      if (correctSlug && allSlugs.has(correctSlug)) {
+        const escapedSlug = brokenSlug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const replacePattern = new RegExp(`\\/blog\\/${escapedSlug}(?=[)#\\s])`, 'g');
+        const newContent = rawContent.replace(replacePattern, `/blog/${correctSlug}`);
+        if (newContent !== rawContent) {
+          rawContent = newContent;
+          modified = true;
+          issue.fixed = true;
+          fixCounts.link++;
+          log('✅', `Corrected link /blog/${brokenSlug} → /blog/${correctSlug} in ${path.basename(filePath)}`);
+          continue;
+        }
+      }
+
+      // Strategy 2: Fallback — remove the entire line containing the broken link
       const linePattern = new RegExp(
         `^[ \\t]*-\\s+\\[([^\\]]*)\\]\\(\\/blog\\/${brokenSlug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\)[^\\n]*\\n?`,
         'gm'
