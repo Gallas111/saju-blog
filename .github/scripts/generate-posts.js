@@ -5,7 +5,6 @@
 
 const fs = require("fs");
 const path = require("path");
-const matter = require("gray-matter");
 const { selectKeywords } = require("./keyword-research");
 const { callGemini } = require("./utils/gemini");
 const { writeMdxFile } = require("./utils/mdx-writer");
@@ -26,9 +25,9 @@ function buildSlugMap() {
 
   for (const f of fs.readdirSync(postsDir).filter((f) => f.endsWith(".mdx"))) {
     const raw = fs.readFileSync(path.join(postsDir, f), "utf-8");
-    const { data } = matter(raw);
+    const slugMatch = raw.match(/slug:\s*"(.+?)"/);
     const filenameSlug = f.replace(/\.mdx$/, "").replace(/^\d{4}-\d{2}-\d{2}-/, "");
-    const actualSlug = data.slug || filenameSlug;
+    const actualSlug = slugMatch ? slugMatch[1] : filenameSlug;
     validSlugs.add(actualSlug);
     if (filenameSlug !== actualSlug) {
       filenameToSlug.set(filenameSlug, actualSlug);
