@@ -41,6 +41,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...categoryUrls,
     ...tagUrls,
     {
+      url: `${BASE_URL}/about`,
+      lastModified: new Date("2026-03-14"),
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
+    },
+    {
       url: `${BASE_URL}/terms`,
       lastModified: new Date("2026-03-01"),
       changeFrequency: "yearly" as const,

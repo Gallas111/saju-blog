@@ -33,6 +33,9 @@ export default function Header() {
           <Link href="/category/타로" className="text-muted hover:text-gold transition-colors">
             타로
           </Link>
+          <Link href="/search" className="text-muted hover:text-gold transition-colors">
+            검색
+          </Link>
           <Link
             href="https://www.sajuboka.com"
             target="_blank"
@@ -67,6 +70,7 @@ export default function Header() {
           <Link href="/category/꿈 해몽" onClick={() => setMenuOpen(false)} className="block py-2 text-muted hover:text-gold">꿈 해몽</Link>
           <Link href="/category/운세" onClick={() => setMenuOpen(false)} className="block py-2 text-muted hover:text-gold">운세</Link>
           <Link href="/category/타로" onClick={() => setMenuOpen(false)} className="block py-2 text-muted hover:text-gold">타로</Link>
+          <Link href="/search" onClick={() => setMenuOpen(false)} className="block py-2 text-muted hover:text-gold">검색</Link>
           <Link
             href="https://www.sajuboka.com"
             target="_blank"

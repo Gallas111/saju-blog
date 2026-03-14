@@ -60,6 +60,9 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/",
+    types: {
+      "application/rss+xml": "/feed.xml",
+    },
   },
   other: {
     "google-adsense-account": "ca-pub-1022869499967960",

@@ -44,6 +44,8 @@ export default function Footer() {
         <div className="border-t border-card-border mt-8 pt-6 text-center text-xs text-muted">
           <p>&copy; {new Date().getFullYear()} 사주보까. All rights reserved.</p>
           <div className="mt-2 flex items-center justify-center gap-3">
+            <Link href="/about" className="hover:text-gold transition-colors">소개</Link>
+            <span className="text-card-border">|</span>
             <Link href="/terms" className="hover:text-gold transition-colors">이용약관</Link>
             <span className="text-card-border">|</span>
             <Link href="/privacy" className="hover:text-gold transition-colors">개인정보처리방침</Link>
