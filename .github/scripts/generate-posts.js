@@ -76,7 +76,7 @@ async function generatePost(keyword) {
 - 롱테일 키워드: ${keyword.keywords.longTail.join(", ")}
 
 ## 작성 규칙
-1. 마크다운 형식 (H2, H3 제목 사용)
+1. 마크다운 형식 (H2, H3 제목만 사용 — H1(#) 절대 사용 금지, 제목은 별도 처리됨)
 2. 2000~3000자 분량
 3. 주요 키워드를 자연스럽게 H2 제목에 2~3회 배치
 4. 롱테일 키워드를 본문에 2~3회 자연스럽게 배치
@@ -95,11 +95,17 @@ ${today} (이 연도 기준으로 작성할 것)
 - "점술은 참고 사항" 정도의 균형잡힌 시각
 - 한자 병기는 처음 등장시에만
 - 코드블록 사용 금지
+- 글 시작은 ## (H2)로 시작할 것 (# (H1) 절대 금지)
 - 연도가 포함되는 내용은 반드시 현재 연도(${new Date().getFullYear()}년) 기준으로 작성
 - 절대 과거 연도(2024년, 2025년 등)의 정보를 사용하지 말 것
 - "[블로그 이름]" 같은 플레이스홀더 대신 "사주보까 스토리"를 사용할 것
 
-본문만 작성해주세요 (frontmatter 제외):`;
+첫 줄에 [DESCRIPTION]: 형식으로 이 글의 메타 설명(120~155자)을 작성하세요.
+- 질문형이나 후킹 문구로 시작 (예: "~이 궁금하신가요?", "~꿈을 꾸셨나요?")
+- 글의 핵심 주제 2~3가지를 구체적으로 포함
+- "~에 대해 상세히 알아봅니다" 같은 밋밋한 표현 금지
+
+그 다음 줄부터 본문을 작성해주세요 (frontmatter 제외):`;
 
   let content = await callGemini(prompt, { temperature: 0.8, maxTokens: 8192 });
 
@@ -114,6 +120,21 @@ ${today} (이 연도 기준으로 작성할 것)
   }
   content = content.replace(/\[블로그 이름\]/g, "사주보까 스토리");
 
+  // AI가 생성한 description 추출
+  let description = "";
+  const descMatch = content.match(/^\[DESCRIPTION\]:\s*(.+)/m);
+  if (descMatch) {
+    description = descMatch[1].trim();
+    content = content.replace(/^\[DESCRIPTION\]:\s*.+\n?/m, "");
+    console.log(`  📝 AI 생성 description: ${description.slice(0, 50)}...`);
+  }
+  if (!description) {
+    description = `${keyword.keywords.primary}의 핵심 정보를 총정리! ${keyword.keywords.secondary[0] || ""}, ${keyword.keywords.secondary[1] || ""} 등을 알기 쉽게 풀어드립니다.`;
+  }
+
+  // H1 제목 제거 (페이지 템플릿에서 자동 렌더링됨)
+  content = content.replace(/^# .+\n+/m, "");
+
   // 이중 헤딩 마크다운 수정 (### ### → ###)
   content = content.replace(/^(#{1,6})\s+#{1,6}\s+/gm, "$1 ");
 
@@ -123,7 +144,7 @@ ${today} (이 연도 기준으로 작성할 것)
   return {
     title: keyword.title,
     slug: keyword.slug,
-    description: `${keyword.keywords.primary}에 대해 상세히 알아봅니다. ${keyword.keywords.secondary[0] || ""}${keyword.keywords.secondary[1] ? ", " + keyword.keywords.secondary[1] : ""} 등 핵심 정보를 총정리합니다.`,
+    description,
     category: keyword.category,
     tags: keyword.tags,
     date: today,
