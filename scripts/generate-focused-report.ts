@@ -1,5 +1,5 @@
 import { google } from 'googleapis';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+
 import * as fs from 'fs';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
@@ -12,7 +12,8 @@ dotenv.config();
 const KEY_FILE_PATH = path.join(process.cwd(), 'google-credentials.json');
 const GA_PROPERTY_ID = process.env.GA_PROPERTY_ID;
 const GSC_SITE_URL = process.env.GSC_SITE_URL;
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const CF_ACCOUNT_ID = process.env.CF_ACCOUNT_ID;
+const CF_API_TOKEN = process.env.CF_API_TOKEN;
 const EMAIL_USER = process.env.EMAIL_USER;
 const EMAIL_PASS = process.env.EMAIL_PASS;
 const EMAIL_RECEIVER = process.env.EMAIL_RECEIVER;
@@ -94,9 +95,9 @@ async function fetchAnalyticsData(authClient: any) {
 }
 
 async function generateFocusedInsights(gscData: any[], gaData: any[]) {
-    if (!GEMINI_API_KEY) throw new Error('환경변수 GEMINI_API_KEY가 설정되지 않았습니다.');
-    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    if (!CF_ACCOUNT_ID || !CF_API_TOKEN) throw new Error('환경변수 CF_ACCOUNT_ID 및 CF_API_TOKEN이 설정되지 않았습니다.');
+    const CF_MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
+    const url = `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/ai/run/${CF_MODEL}`;
 
     const prompt = `
 당신은 '사주보까 스토리(sajubokastory.com)' 사주/운세 블로그 전담 SEO 및 수익형 블로그 컨설턴트입니다.
@@ -120,8 +121,20 @@ ${JSON.stringify(gaData.slice(0, 20), null, 2)}
 톤앤매너는 전문적이면서도 응원하는 분위기로 작성해주시고, 이메일로 읽기 좋게 마크다운 형식을 잘 활용해주세요.
 `;
 
-    const result = await model.generateContent(prompt);
-    return result.response.text();
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${CF_API_TOKEN}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            messages: [{ role: 'user', content: prompt }],
+            max_tokens: 8192,
+        }),
+    });
+    if (!response.ok) throw new Error(`CF Workers AI error (${response.status}): ${await response.text()}`);
+    const data = await response.json();
+    return data.result?.response || '';
 }
 
 async function main() {
