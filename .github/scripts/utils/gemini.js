@@ -1,10 +1,11 @@
 /**
- * AI wrapper: Gemini first → CF Workers AI fallback
+ * AI wrapper: Gemini first → Groq → CF Workers AI fallback
  */
 
 const CF_ACCOUNT_ID = process.env.CF_ACCOUNT_ID;
 const CF_API_TOKEN = process.env.CF_API_TOKEN;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
 const CF_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
 
 async function callGeminiDirect(prompt, { temperature = 0.8, maxTokens = 8192 } = {}) {
@@ -47,10 +48,31 @@ async function callGemini(prompt, opts = {}) {
       }
     }
   }
+  // 2nd: Try Groq
+  if (GROQ_API_KEY) {
+    try {
+      const groqResp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${GROQ_API_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'user', content: prompt }], max_tokens: 8192 }),
+      });
+      if (groqResp.status === 429) {
+        console.warn('⚡ Groq 한도 초과 → CF Workers AI로 전환');
+      } else if (groqResp.ok) {
+        const groqData = await groqResp.json();
+        const text = groqData.choices?.[0]?.message?.content?.trim() || '';
+        if (text) return text;
+      }
+    } catch (err) {
+      console.warn(`⚠️ Groq 실패 → CF Workers AI로 전환: ${err.message}`);
+    }
+  }
+
+  // 3rd: CF Workers AI fallback
   if (CF_ACCOUNT_ID && CF_API_TOKEN) {
     return await callCFWorkersAI(prompt, opts);
   }
-  throw new Error("Gemini과 CF Workers AI 모두 사용 불가");
+  throw new Error("Gemini, Groq, CF Workers AI 모두 사용 불가");
 }
 
 module.exports = { callGemini };
