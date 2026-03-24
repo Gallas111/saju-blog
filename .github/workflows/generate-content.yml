@@ -1,13 +1,13 @@
 name: Generate Blog Content
 
 on:
-  schedule:
-    # 09:00 KST (00:00 UTC) - 1번째 포스트
-    - cron: "0 0 * * *"
-    # 13:00 KST (04:00 UTC) - 2번째 포스트
-    - cron: "0 4 * * *"
-    # 17:00 KST (08:00 UTC) - 3번째 포스트
-    - cron: "0 8 * * *"
+  # schedule:
+  #   # 09:00 KST (00:00 UTC) - 1번째 포스트
+  #   - cron: "0 0 * * *"
+  #   # 13:00 KST (04:00 UTC) - 2번째 포스트
+  #   - cron: "0 4 * * *"
+  #   # 17:00 KST (08:00 UTC) - 3번째 포스트
+  #   - cron: "0 8 * * *"
   workflow_dispatch:
 
 permissions:
