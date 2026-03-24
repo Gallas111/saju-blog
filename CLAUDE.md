@@ -46,3 +46,6 @@ npm run dev    # 개발 서버 (Turbopack)
 npm run build  # 프로덕션 빌드 (webpack)
 npm run lint   # ESLint 검사
 ```
+
+## Writing Guide
+See WRITING_GUIDE.md for 글 구조, 한국어 문체, 금지 패턴 가이드. 모든 포스트 작성 시 반드시 참고.
