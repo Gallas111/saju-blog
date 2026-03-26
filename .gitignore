@@ -35,6 +35,11 @@ yarn-error.log*
 
 # google credentials
 google-credentials.json
+*.credentials.json
+*.bak
+.claude/settings.local.json
+keys.txt
+*.key
 
 # vercel
 .vercel
