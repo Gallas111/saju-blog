@@ -6,7 +6,7 @@ export function GET() {
   const posts = getAllPosts();
 
   const items = posts
-    .slice(0, 20)
+    .slice(0, 50)
     .map(
       (post) => `    <item>
       <title><![CDATA[${post.title}]]></title>
