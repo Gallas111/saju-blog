@@ -50,6 +50,8 @@ export default function Footer() {
             <span className="text-card-border">|</span>
             <Link href="/privacy" className="hover:text-gold transition-colors">개인정보처리방침</Link>
             <span className="text-card-border">|</span>
+            <Link href="/contact" className="hover:text-gold transition-colors">문의</Link>
+            <span className="text-card-border">|</span>
             <a href="https://www.sajuboka.com" target="_blank" rel="noopener noreferrer" className="text-gold hover:text-gold-light transition-colors">
               sajuboka.com
             </a>

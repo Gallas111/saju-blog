@@ -11,6 +11,8 @@ import CTABanner from "@/components/CTABanner";
 import TableOfContents from "@/components/TableOfContents";
 import ShareButtons from "@/components/ShareButtons";
 import BlogCard from "@/components/BlogCard";
+import AuthorCard from "@/components/AuthorCard";
+import Disclaimer from "@/components/Disclaimer";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -160,6 +162,9 @@ export default async function BlogPostPage({ params }: Props) {
           <p className="text-muted leading-relaxed">{post.description}</p>
         </header>
 
+        {/* Author Card - E-E-A-T */}
+        <AuthorCard date={post.date} readingTime={`${post.readingTime}분`} />
+
         {/* Table of Contents */}
         <TableOfContents items={toc} />
 
@@ -188,6 +193,9 @@ export default async function BlogPostPage({ params }: Props) {
             {post.content}
           </ReactMarkdown>
         </article>
+
+        {/* Disclaimer & Ad Disclosure */}
+        <Disclaimer />
 
         {/* CTA Banner */}
         <CTABanner
