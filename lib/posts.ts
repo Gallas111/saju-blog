@@ -12,6 +12,7 @@ export interface PostMeta {
   category: string;
   tags: string[];
   date: string;
+  dateModified?: string;
   icon: string;
   relatedService: {
     label: string;
@@ -45,6 +46,7 @@ function parseFrontmatter(fileContent: string, fileName: string): Post | null {
     category: data.category ?? "운세",
     tags: data.tags ?? [],
     date: data.date ?? "",
+    dateModified: data.dateModified ?? undefined,
     icon: data.icon ?? "🔮",
     relatedService: data.relatedService ?? {
       label: "내 사주 분석하기",

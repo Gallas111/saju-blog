@@ -197,13 +197,6 @@ export default async function BlogPostPage({ params }: Props) {
         {/* Disclaimer & Ad Disclosure */}
         <Disclaimer />
 
-        {/* CTA Banner */}
-        <CTABanner
-          label={post.relatedService.label}
-          href={post.relatedService.href}
-          category={post.category}
-        />
-
         {/* Tags */}
         <div className="flex flex-wrap gap-2 my-8">
           {post.tags.map((tag) => (
@@ -235,6 +228,13 @@ export default async function BlogPostPage({ params }: Props) {
             </div>
           </section>
         )}
+
+        {/* CTA Banner - placed last to maximize internal page views */}
+        <CTABanner
+          label={post.relatedService.label}
+          href={post.relatedService.href}
+          category={post.category}
+        />
       </main>
       <Footer />
     </>

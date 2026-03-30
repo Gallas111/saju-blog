@@ -7,7 +7,7 @@ export function generateArticleSchema(post: PostMeta, url: string) {
     headline: post.title,
     description: post.description,
     datePublished: post.date,
-    dateModified: post.date,
+    dateModified: post.dateModified ?? post.date,
     author: {
       "@type": "Organization",
       name: "사주보까",
