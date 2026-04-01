@@ -31,10 +31,26 @@ export const metadata: Metadata = {
     ],
     apple: [{ url: "/apple-icon" }],
   },
+  keywords: ["사주", "타로", "꿈해몽", "운세", "궁합", "관상", "손금", "토정비결", "띠별 운세", "오늘의 운세"],
   openGraph: {
     type: "website",
     locale: "ko_KR",
     siteName: "사주보까 블로그",
+    images: [
+      {
+        url: "/images/og-default.png",
+        width: 1200,
+        height: 630,
+        alt: "사주보까 블로그 — 운세·사주·꿈해몽 정보",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "사주보까 블로그 — 운세·사주·꿈해몽 정보",
+    description:
+      "사주, 운세, 꿈 해몽, 타로, 궁합, 일주론 등 운세 정보를 매일 업데이트합니다.",
+    images: ["/images/og-default.png"],
   },
   robots: {
     index: true,
@@ -84,6 +100,24 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} antialiased min-h-screen flex flex-col`}
       >
+        <Script
+          id="website-jsonld"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "사주보까",
+              url: "https://www.sajubokastory.com",
+              potentialAction: {
+                "@type": "SearchAction",
+                target:
+                  "https://www.sajubokastory.com/search?q={search_term_string}",
+                "query-input": "required name=search_term_string",
+              },
+            }),
+          }}
+        />
         {children}
         <ScrollTracker />
         <Script
