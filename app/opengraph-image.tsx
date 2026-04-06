@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 
+export const dynamic = "force-static";
 export const alt = "사주보까 블로그 — 운세·사주·꿈해몽 정보";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";

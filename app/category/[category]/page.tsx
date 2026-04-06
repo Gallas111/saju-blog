@@ -6,13 +6,9 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogCard from "@/components/BlogCard";
 import CategoryFilter from "@/components/CategoryFilter";
-import Pagination from "@/components/Pagination";
-
-const POSTS_PER_PAGE = 10;
 
 interface Props {
   params: Promise<{ category: string }>;
-  searchParams: Promise<{ page?: string }>;
 }
 
 export function generateStaticParams() {
@@ -37,11 +33,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function CategoryPage({ params, searchParams }: Props) {
+export default async function CategoryPage({ params }: Props) {
   const { category } = await params;
-  const sp = await searchParams;
   const categoryName = decodeURIComponent(category);
-  const page = Math.max(1, parseInt(sp.page ?? "1", 10));
 
   const posts = getPostsByCategory(categoryName);
   const catEntry = Object.values(CATEGORIES).find(
@@ -49,12 +43,6 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   );
 
   if (posts.length === 0 && !catEntry) notFound();
-
-  const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
-  const currentPosts = posts.slice(
-    (page - 1) * POSTS_PER_PAGE,
-    page * POSTS_PER_PAGE
-  );
 
   return (
     <>
@@ -77,23 +65,17 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         <CategoryFilter activeCategory={categoryName} />
 
         <div className="grid gap-4">
-          {currentPosts.map((post) => (
+          {posts.map((post) => (
             <BlogCard key={post.slug} post={post} />
           ))}
         </div>
 
-        {currentPosts.length === 0 && (
+        {posts.length === 0 && (
           <div className="text-center py-20 text-muted">
             <p className="text-4xl mb-4">📭</p>
             <p>이 카테고리에는 아직 포스트가 없습니다.</p>
           </div>
         )}
-
-        <Pagination
-          currentPage={page}
-          totalPages={totalPages}
-          basePath={`/category/${encodeURIComponent(categoryName)}`}
-        />
       </main>
       <Footer />
     </>

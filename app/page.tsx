@@ -2,29 +2,14 @@ import { getAllPosts } from "@/lib/posts";
 import { getAllTags } from "@/lib/tags";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import BlogCard from "@/components/BlogCard";
 import CategoryFilter from "@/components/CategoryFilter";
 import FeaturedPosts from "@/components/FeaturedPosts";
 import TagCloud from "@/components/TagCloud";
-import Pagination from "@/components/Pagination";
+import ClientPagination from "@/components/ClientPagination";
 
-const POSTS_PER_PAGE = 10;
-
-export default async function HomePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ page?: string }>;
-}) {
-  const params = await searchParams;
-  const page = Math.max(1, parseInt(params.page ?? "1", 10));
+export default function HomePage() {
   const posts = getAllPosts();
   const tags = getAllTags();
-
-  const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
-  const currentPosts = posts.slice(
-    (page - 1) * POSTS_PER_PAGE,
-    page * POSTS_PER_PAGE
-  );
 
   return (
     <>
@@ -49,26 +34,13 @@ export default async function HomePage({
         </section>
 
         {/* Featured posts */}
-        {page === 1 && <FeaturedPosts posts={posts} />}
+        <FeaturedPosts posts={posts} />
 
         {/* Category filter */}
         <CategoryFilter />
 
-        {/* Posts grid */}
-        <div className="grid gap-4">
-          {currentPosts.map((post) => (
-            <BlogCard key={post.slug} post={post} />
-          ))}
-        </div>
-
-        {currentPosts.length === 0 && (
-          <div className="text-center py-20 text-muted">
-            <p className="text-4xl mb-4">📭</p>
-            <p>아직 포스트가 없습니다.</p>
-          </div>
-        )}
-
-        <Pagination currentPage={page} totalPages={totalPages} />
+        {/* Posts grid with pagination */}
+        <ClientPagination posts={posts} />
 
         {/* Tag cloud */}
         {tags.length > 0 && (

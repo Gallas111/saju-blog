@@ -3,6 +3,8 @@ import { getAllPosts } from "@/lib/posts";
 import { CATEGORIES } from "@/lib/categories";
 import { getAllTags } from "@/lib/tags";
 
+export const dynamic = "force-static";
+
 const BASE_URL = "https://www.sajubokastory.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {

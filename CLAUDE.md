@@ -2,8 +2,8 @@
 
 ## 서비스
 - **목적:** 사주보까(sajuboka.com) 트래픽 유입을 위한 독립 SEO 블로그
-- **배포:** Vercel (GitHub push → 자동 배포)
-- **도메인:** sajubokastory.com (Cloudflare에서 구매, Vercel 연결)
+- **배포:** Cloudflare Pages (GitHub push → 자동 배포, static export)
+- **도메인:** sajubokastory.com (Cloudflare)
 
 ## 기술 스택
 - Next.js 16 (App Router) + React 19 + TypeScript + Tailwind CSS 4
@@ -38,7 +38,6 @@
 - `GEMINI_API_KEY` — 콘텐츠 생성
 - `NAVER_CLIENT_ID` — Naver DataLab (선택)
 - `NAVER_CLIENT_SECRET` — Naver DataLab (선택)
-- `VERCEL_DEPLOY_HOOK` — Vercel 재배포 웹훅 (선택)
 
 ## 개발 명령어
 ```bash

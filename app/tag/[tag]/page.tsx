@@ -4,13 +4,9 @@ import { getPostsByTag, findTagName, getAllTags } from "@/lib/tags";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogCard from "@/components/BlogCard";
-import Pagination from "@/components/Pagination";
-
-const POSTS_PER_PAGE = 10;
 
 interface Props {
   params: Promise<{ tag: string }>;
-  searchParams: Promise<{ page?: string }>;
 }
 
 export function generateStaticParams() {
@@ -30,22 +26,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function TagPage({ params, searchParams }: Props) {
+export default async function TagPage({ params }: Props) {
   const { tag } = await params;
-  const sp = await searchParams;
   const tagSlug = decodeURIComponent(tag);
-  const page = Math.max(1, parseInt(sp.page ?? "1", 10));
 
   const tagName = findTagName(tagSlug);
   const posts = getPostsByTag(tagSlug);
 
   if (posts.length === 0) notFound();
-
-  const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
-  const currentPosts = posts.slice(
-    (page - 1) * POSTS_PER_PAGE,
-    page * POSTS_PER_PAGE
-  );
 
   return (
     <>
@@ -61,16 +49,10 @@ export default async function TagPage({ params, searchParams }: Props) {
         </section>
 
         <div className="grid gap-4">
-          {currentPosts.map((post) => (
+          {posts.map((post) => (
             <BlogCard key={post.slug} post={post} />
           ))}
         </div>
-
-        <Pagination
-          currentPage={page}
-          totalPages={totalPages}
-          basePath={`/tag/${encodeURIComponent(tagSlug)}`}
-        />
       </main>
       <Footer />
     </>
