@@ -26,13 +26,15 @@
 - 모든 포스트 하단에 CTABanner 자동 삽입 (sajuboka.com 유입 핵심)
 - `.env.local`은 절대 커밋하지 않음
 - 빌드 시 `npm run build` (webpack 모드, Turbopack 아님)
+- **포스트 frontmatter에 `published: true` 반드시 포함** (없으면 사이트에 안 보임)
+- FAQ의 `a:` 값에 따옴표(`"`) 시작 금지 → YAML 파싱 에러 발생
 
 ## 카테고리
 일주론, 꿈 해몽, 운세, 사주, 타로, 명리학, 궁합, 오행, 절기, 작명
 
 ## 자동화 파이프라인
 - `generate-content.yml`: 매일 01:00 KST → 키워드봇 + 글쓰기봇 → 3개 포스트 생성
-- `scheduled-publish.yml`: 매일 09:00 KST → Vercel 재배포
+- Cloudflare Pages: GitHub push 시 자동 빌드/배포
 
 ## GitHub Secrets 필수
 - `GEMINI_API_KEY` — 콘텐츠 생성
