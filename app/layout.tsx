@@ -67,8 +67,8 @@ export const metadata: Metadata = {
     google: "lOwTFjWBnR7_zMhcWWb5ZX_XOwqP8ou95e59KK5yMug",
     other: {
       "naver-site-verification": "2a810da80d41904bda93f7dba12e29196a8c243b",
-      // TODO: Add Bing Webmaster verification code
-      // "msvalidate.01": "YOUR_BING_VERIFICATION_CODE",
+      // Bing Webmaster: https://www.bing.com/webmasters → 사이트 추가 → 메타 태그 코드 입력
+      // "msvalidate.01": "BING_CODE_HERE",
     },
   },
   alternates: {
