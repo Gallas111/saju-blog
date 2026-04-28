@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import ReactMarkdown from "react-markdown";
@@ -8,6 +9,7 @@ import { generateArticleSchema, generateBreadcrumbSchema } from "@/lib/seo";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CTABanner from "@/components/CTABanner";
+import InlineToolCTA from "@/components/InlineToolCTA";
 import TableOfContents from "@/components/TableOfContents";
 import ShareButtons from "@/components/ShareButtons";
 import BlogCard from "@/components/BlogCard";
@@ -168,30 +170,49 @@ export default async function BlogPostPage({ params }: Props) {
         {/* Table of Contents */}
         <TableOfContents items={toc} />
 
-        {/* Post content */}
+        {/* Post content - split by H2, inject InlineToolCTA after 2nd H2 section */}
         <article className="prose">
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            components={{
-              h2: ({ children }) => {
+          {(() => {
+            const markdownComponents = {
+              h2: ({ children }: { children?: React.ReactNode }) => {
                 const text = String(children);
                 const id = addHeadingIds(text);
                 return <h2 id={id}>{children}</h2>;
               },
-              h3: ({ children }) => {
+              h3: ({ children }: { children?: React.ReactNode }) => {
                 const text = String(children);
                 const id = addHeadingIds(text);
                 return <h3 id={id}>{children}</h3>;
               },
-              h4: ({ children }) => {
+              h4: ({ children }: { children?: React.ReactNode }) => {
                 const text = String(children);
                 const id = addHeadingIds(text);
                 return <h4 id={id}>{children}</h4>;
               },
-            }}
-          >
-            {post.content}
-          </ReactMarkdown>
+            };
+
+            const sections = post.content.split(/(?=^## )/gm);
+            const injectAfter = sections.length >= 5 ? 2 : 1;
+            const midPoint =
+              sections.length >= 7 ? Math.floor(sections.length / 2) : -1;
+
+            return sections.map((section, i) => (
+              <Fragment key={i}>
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={markdownComponents}
+                >
+                  {section}
+                </ReactMarkdown>
+                {i === injectAfter && (
+                  <InlineToolCTA category={post.category} />
+                )}
+                {i === midPoint && i !== injectAfter && (
+                  <InlineToolCTA category={post.category} />
+                )}
+              </Fragment>
+            ));
+          })()}
         </article>
 
         {/* Disclaimer & Ad Disclosure */}
