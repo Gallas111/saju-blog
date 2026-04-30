@@ -59,7 +59,7 @@ async function main() {
             startDate: start28, endDate: end28,
             dimensions: ['query'], rowLimit: 20,
             orderBy: [{ field: 'impressions', descending: true } as any],
-        },
+        } as any,
     });
     console.log('[상위 검색어 20개 (노출 많은 순)]');
     queries.data.rows?.forEach((r, i) => {
