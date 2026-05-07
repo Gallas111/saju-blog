@@ -16,6 +16,7 @@ const SITES: Array<{ name: string; siteUrl: string; sitemapUrl: string }> = [
   { name: 'health-blog', siteUrl: 'https://www.wellnesstodays.com/',  sitemapUrl: 'https://www.wellnesstodays.com/sitemap.xml' },
   { name: 'bukbukstock', siteUrl: 'sc-domain:bukbukstock.com',        sitemapUrl: 'https://www.bukbukstock.com/sitemap.xml' },
   { name: 'lottohanpan', siteUrl: 'sc-domain:lottohanpan.com',        sitemapUrl: 'https://lottohanpan.com/sitemap.xml' },
+  { name: 'coinday',     siteUrl: 'sc-domain:coindaynow.com',         sitemapUrl: 'https://www.coindaynow.com/sitemap.xml' },
 ];
 
 const fmt = (d: Date) => d.toISOString().split('T')[0];
