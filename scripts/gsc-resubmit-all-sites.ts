@@ -1,5 +1,5 @@
 /**
- * GSC Sitemap 통합 재제출 — 7개 사이트
+ * GSC Sitemap 통합 재제출 — 9개 사이트
  * 사용법: npx tsx scripts/gsc-resubmit-all-sites.ts
  */
 import { google } from 'googleapis';
@@ -15,6 +15,8 @@ const SITES = [
   { name: 'baby-blog',   siteUrl: 'sc-domain:babytodak.com',          sitemapUrl: 'https://www.babytodak.com/sitemap.xml' },
   { name: 'health-blog', siteUrl: 'https://www.wellnesstodays.com/',  sitemapUrl: 'https://www.wellnesstodays.com/sitemap.xml' },
   { name: 'bukbukstock', siteUrl: 'sc-domain:bukbukstock.com',        sitemapUrl: 'https://www.bukbukstock.com/sitemap.xml' },
+  { name: 'lottohanpan', siteUrl: 'sc-domain:lottohanpan.com',        sitemapUrl: 'https://lottohanpan.com/sitemap.xml' },
+  { name: 'coinday',     siteUrl: 'sc-domain:coindaynow.com',         sitemapUrl: 'https://www.coindaynow.com/sitemap.xml' },
 ];
 
 async function main() {
