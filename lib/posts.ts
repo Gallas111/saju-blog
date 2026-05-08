@@ -24,6 +24,7 @@ export interface PostMeta {
     longTail: string[];
   };
   published: boolean;
+  noindex?: boolean;
   readingTime: number;
 }
 
@@ -58,6 +59,7 @@ function parseFrontmatter(fileContent: string, fileName: string): Post | null {
       longTail: [],
     },
     published: data.published ?? true,
+    noindex: data.noindex === true,
     readingTime: calculateReadingTime(content),
     content,
   };

@@ -1,7 +1,11 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getPostsByCategory } from "@/lib/posts";
-import { CATEGORIES, type CategoryKey } from "@/lib/categories";
+import { CATEGORIES } from "@/lib/categories";
+
+// Categories with fewer than this many published posts are marked noindex,
+// so weak category pages don't drag down the site-wide quality signal.
+const CATEGORY_INDEX_THRESHOLD = 5;
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogCard from "@/components/BlogCard";
@@ -25,11 +29,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     (c) => c.name === categoryName
   );
 
+  // Count only indexable posts (exclude noindex thin posts) for the threshold check
+  const indexablePosts = getPostsByCategory(categoryName).filter(
+    (p) => !p.noindex
+  );
+  const isWeak = indexablePosts.length < CATEGORY_INDEX_THRESHOLD;
+
   return {
     title: catEntry
       ? `${catEntry.icon} ${catEntry.name} — ${catEntry.description}`
       : `${categoryName} 글 모음`,
     description: catEntry?.description ?? `${categoryName} 관련 블로그 글 모음`,
+    ...(isWeak && {
+      robots: { index: false, follow: true },
+    }),
   };
 }
 

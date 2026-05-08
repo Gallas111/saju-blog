@@ -1,31 +1,44 @@
 import type { MetadataRoute } from "next";
-import { getAllPosts } from "@/lib/posts";
+import { getAllPosts, getPostsByCategory } from "@/lib/posts";
 import { CATEGORIES } from "@/lib/categories";
 import { getAllTags } from "@/lib/tags";
 
 export const dynamic = "force-static";
 
 const BASE_URL = "https://www.sajubokastory.com";
+// Keep in sync with app/category/[category]/page.tsx
+const CATEGORY_INDEX_THRESHOLD = 5;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const posts = getAllPosts();
   const tags = getAllTags();
 
-  const postUrls = posts.map((post) => ({
-    url: `${BASE_URL}/blog/${post.slug}`,
-    lastModified: post.dateModified
-      ? new Date(post.dateModified)
-      : new Date(post.date),
-    changeFrequency: "weekly" as const,
-    priority: 0.8,
-  }));
+  // Exclude noindex posts from sitemap so Google doesn't waste crawl on thin pages
+  const postUrls = posts
+    .filter((post) => !post.noindex)
+    .map((post) => ({
+      url: `${BASE_URL}/blog/${post.slug}`,
+      lastModified: post.dateModified
+        ? new Date(post.dateModified)
+        : new Date(post.date),
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    }));
 
-  const categoryUrls = Object.values(CATEGORIES).map((cat) => ({
-    url: `${BASE_URL}/category/${encodeURIComponent(cat.name)}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: 0.6,
-  }));
+  // Exclude weak categories (< threshold indexable posts) from sitemap
+  const categoryUrls = Object.values(CATEGORIES)
+    .filter((cat) => {
+      const indexable = getPostsByCategory(cat.name).filter(
+        (p) => !p.noindex
+      );
+      return indexable.length >= CATEGORY_INDEX_THRESHOLD;
+    })
+    .map((cat) => ({
+      url: `${BASE_URL}/category/${encodeURIComponent(cat.name)}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    }));
 
   const tagUrls = tags.slice(0, 50).map((tag) => ({
     url: `${BASE_URL}/tag/${encodeURIComponent(tag.slug)}`,
