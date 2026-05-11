@@ -12,7 +12,7 @@ if [ -z "$SITE_URL" ]; then
   exit 1
 fi
 
-curl -s -X POST "https://api.indexnow.org/IndexNow"   -H "Content-Type: application/json"   -d "{\"host\":\"$HOST\",\"key\":\"$KEY\",\"keyLocation\":\"https://$HOST/$KEY.txt\",\"urlList\":[\"$SITE_URL\"]}"
+curl -s -X POST "https://yandex.com/indexnow"   -H "Content-Type: application/json"   -d "{\"host\":\"$HOST\",\"key\":\"$KEY\",\"keyLocation\":\"https://$HOST/$KEY.txt\",\"urlList\":[\"$SITE_URL\"]}"
 
 echo ""
 echo "Submitted to IndexNow: $SITE_URL"
