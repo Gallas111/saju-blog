@@ -15,6 +15,11 @@ import ShareButtons from "@/components/ShareButtons";
 import BlogCard from "@/components/BlogCard";
 import AuthorCard from "@/components/AuthorCard";
 import Disclaimer from "@/components/Disclaimer";
+import AdSlot from "@/components/AdSlot";
+
+const AD_SLOT_TOP = process.env.NEXT_PUBLIC_ADSENSE_SLOT_TOP || "";
+const AD_SLOT_BOTTOM = process.env.NEXT_PUBLIC_ADSENSE_SLOT_BOTTOM || "";
+const AD_SLOT_RELATED = process.env.NEXT_PUBLIC_ADSENSE_SLOT_RELATED || "";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -170,6 +175,14 @@ export default async function BlogPostPage({ params }: Props) {
         {/* Author Card - E-E-A-T */}
         <AuthorCard date={post.date} readingTime={`${post.readingTime}분`} />
 
+        {/* Top in-article ad */}
+        <AdSlot
+          slot={AD_SLOT_TOP}
+          layout="in-article"
+          format="fluid"
+          label="본문 상단 광고"
+        />
+
         {/* Table of Contents */}
         <TableOfContents items={toc} />
 
@@ -211,7 +224,15 @@ export default async function BlogPostPage({ params }: Props) {
                   <InlineToolCTA category={post.category} />
                 )}
                 {i === midPoint && i !== injectAfter && (
-                  <InlineToolCTA category={post.category} />
+                  <>
+                    <AdSlot
+                      slot={AD_SLOT_BOTTOM}
+                      layout="in-article"
+                      format="fluid"
+                      label="본문 중간 광고"
+                    />
+                    <InlineToolCTA category={post.category} />
+                  </>
                 )}
               </Fragment>
             ));
@@ -238,6 +259,13 @@ export default async function BlogPostPage({ params }: Props) {
         <div className="border-t border-card-border pt-6 mb-8">
           <ShareButtons url={postUrl} title={post.title} />
         </div>
+
+        {/* Related-section ad */}
+        <AdSlot
+          slot={AD_SLOT_RELATED}
+          format="auto"
+          label="관련 글 광고"
+        />
 
         {/* Related posts */}
         {related.length > 0 && (
