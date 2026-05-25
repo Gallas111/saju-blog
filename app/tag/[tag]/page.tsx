@@ -10,9 +10,12 @@ interface Props {
 }
 
 export function generateStaticParams() {
-  return getAllTags().map((tag) => ({
-    tag: tag.slug,
-  }));
+  // CF Pages 20K 파일 한계 회피 — count<2 singleton tag 제외 (5/25 600+ post 도달 시 트리거)
+  return getAllTags()
+    .filter((tag) => tag.count >= 2)
+    .map((tag) => ({
+      tag: tag.slug,
+    }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
