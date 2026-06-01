@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import imageDims from "@/lib/image-dims.json";
 import { getPostBySlug, getAllSlugs, getRelatedPosts } from "@/lib/posts";
 import { extractToc } from "@/lib/toc";
 import { generateArticleSchema, generateBreadcrumbSchema } from "@/lib/seo";
@@ -57,6 +58,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }),
   };
 }
+
+// Static body-image dimension map (built by scripts/gen-image-dims.py).
+// Injecting width/height lets the browser reserve aspect-ratio space → zero CLS.
+const IMG_DIMS: Record<string, number[]> = imageDims;
 
 function addHeadingIds(text: string): string {
   return text
@@ -204,6 +209,29 @@ export default async function BlogPostPage({ params }: Props) {
                 const text = String(children);
                 const id = addHeadingIds(text);
                 return <h4 id={id}>{children}</h4>;
+              },
+              img: ({
+                node,
+                ...props
+              }: React.ImgHTMLAttributes<HTMLImageElement> & {
+                node?: unknown;
+              }) => {
+                void node;
+                const src =
+                  typeof props.src === "string" ? props.src : undefined;
+                const dims = src ? IMG_DIMS[src] : undefined;
+                // eslint-disable-next-line @next/next/no-img-element
+                return (
+                  <img
+                    {...props}
+                    alt={props.alt || ""}
+                    {...(dims
+                      ? { width: dims[0], height: dims[1] }
+                      : {})}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                );
               },
             };
 
