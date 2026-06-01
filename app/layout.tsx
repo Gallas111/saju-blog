@@ -89,14 +89,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <head>
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1022869499967960"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
-      </head>
       <body
         className={`${geistSans.variable} antialiased min-h-screen flex flex-col`}
       >
@@ -120,6 +112,18 @@ export default function RootLayout({
         />
         {children}
         <ScrollTracker />
+        {/* Ad/analytics scripts placed at the end of <body> (afterInteractive),
+            matching coinday/ai-blog. Note: Next.js still emits a
+            <link rel="preload" as="script"> in <head> for afterInteractive
+            scripts regardless of JSX position — removing that preload would
+            require strategy="lazyOnload", which we intentionally avoid here to
+            keep ad/gtag load timing unchanged. */}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1022869499967960"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-P8GS2YYFC2"
           strategy="afterInteractive"

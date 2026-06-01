@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "npx tsx scripts/generate-feed.ts && npx tsx scripts/generate-search-index.ts && next build --webpack",
+    "build": "node scripts/gen-image-dims.mjs && npx tsx scripts/generate-feed.ts && npx tsx scripts/generate-search-index.ts && next build --webpack",
     "start": "next start",
     "lint": "eslint",
     "growth:focused-report": "tsx scripts/generate-focused-report.ts"
@@ -35,6 +35,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "image-size": "^2.0.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
