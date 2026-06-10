@@ -11,6 +11,8 @@ const SITES = [
   { name: 'ai-blog',     siteUrl: 'sc-domain:how-toai.com',           sitemapUrl: 'https://www.how-toai.com/sitemap.xml' },
   { name: 'saju-blog',   siteUrl: 'https://www.sajubokastory.com/',   sitemapUrl: 'https://www.sajubokastory.com/sitemap.xml' },
   { name: 'quicktools',  siteUrl: 'sc-domain:toolkio.com',            sitemapUrl: 'https://toolkio.com/sitemap.xml' },
+  { name: 'tokennara',   siteUrl: 'sc-domain:tokennara.com',          sitemapUrl: 'https://www.tokennara.com/sitemap.xml' },
+  { name: 'altnara',     siteUrl: 'sc-domain:altnara.com',            sitemapUrl: 'https://www.altnara.com/sitemap.xml' },
   { name: 'easy-zetec',  siteUrl: 'sc-domain:easyzetec.com',          sitemapUrl: 'https://www.easyzetec.com/sitemap.xml' },
   { name: 'baby-blog',   siteUrl: 'sc-domain:babytodak.com',          sitemapUrl: 'https://www.babytodak.com/sitemap.xml' },
   { name: 'health-blog', siteUrl: 'https://www.wellnesstodays.com/',  sitemapUrl: 'https://www.wellnesstodays.com/sitemap.xml' },

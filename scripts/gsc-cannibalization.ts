@@ -41,6 +41,7 @@ const SITES: Array<{ name: string; siteUrl: string }> = [
   { name: 'lottohanpan', siteUrl: 'sc-domain:lottohanpan.com' },
   { name: 'coinday',     siteUrl: 'sc-domain:coindaynow.com' },
   { name: 'tokennara',   siteUrl: 'sc-domain:tokennara.com' },
+  { name: 'altnara',     siteUrl: 'sc-domain:altnara.com' },
 ];
 
 interface CliArgs {

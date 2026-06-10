@@ -19,6 +19,8 @@ const SITES: Array<{ name: string; siteUrl: string }> = [
   { name: 'health-blog', siteUrl: 'https://www.wellnesstodays.com/' },
   { name: 'bukbukstock', siteUrl: 'sc-domain:bukbukstock.com' },
   { name: 'coinday', siteUrl: 'sc-domain:coindaynow.com' },
+  { name: 'tokennara', siteUrl: 'sc-domain:tokennara.com' },
+  { name: 'altnara', siteUrl: 'sc-domain:altnara.com' },
 ];
 
 const fmt = (d: Date) => d.toISOString().split('T')[0];
