@@ -60,7 +60,7 @@ async function recentPosts(site: typeof SITES[0], per: number): Promise<UrlEntry
       all = all.concat(parseSitemap(await fetchText(child)).urls);
     } catch { /* 자식 사이트맵 한 개 실패는 무시 */ }
   }
-  const posts = all.filter((u) => site.postPattern.test(u.loc) && !//blog/(category|tag|page)//.test(u.loc));
+  const posts = all.filter((u) => site.postPattern.test(u.loc) && !/\/blog\/(category|tag|page)\//.test(u.loc));
   // lastmod 우선, 없으면 URL 내 날짜 추정값
   const key = (u: UrlEntry) => u.lastmod || (u.loc.match(/(\d{4}-\d{2}-\d{2})/) || [])[1] || '';
   posts.sort((a, b) => (key(a) < key(b) ? 1 : -1));
