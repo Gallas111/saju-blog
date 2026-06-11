@@ -58,8 +58,10 @@ function score(file) {
   const internal = (body.match(/\]\(\/blog\//g) || []).length;
   add(internal >= 2, 14, `내부링크 ${internal}개(≥2)`, '같은 블로그 관련글 2~3개 본문 링크(/blog/slug)');
 
-  const faq = /###\s*Q[:.]|자주\s*묻는|자주\s*하는\s*질문|<FAQ|faq/i.test(body);
-  add(faq, 10, `FAQ ${faq ? 'O' : 'X'}`, 'FAQ 3~7개(PAA·리치스니펫 기회)');
+  // FAQ는 대부분 frontmatter faq[] 배열(q/a) — body만 보면 false-negative (2026-06-02~ 오탐 fix)
+  const fmFaqCount = Array.isArray(fm.faq) ? fm.faq.length : 0;
+  const faq = fmFaqCount > 0 || /###\s*Q[:.]|자주\s*묻는|자주\s*하는\s*질문|<FAQ|faq/i.test(body);
+  add(faq, 10, `FAQ ${fmFaqCount > 0 ? `${fmFaqCount}개(frontmatter)` : faq ? 'O(body)' : 'X'}`, 'FAQ 3~7개(PAA·리치스니펫 기회)');
 
   const len = krLen(body);
   add(len >= minlen, 14, `본문 ${len}자(≥${minlen})`, `본문 ${minlen}자+로 보강`);

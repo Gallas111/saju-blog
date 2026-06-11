@@ -90,19 +90,28 @@ export default async function BlogPostPage({ params }: Props) {
     { name: post.title, url: postUrl },
   ]);
 
-  // Extract FAQ from content
-  const faqSection = post.content.match(
-    /## 자주 묻는 질문[\s\S]*$/
-  );
+  // FAQ 추출: ①<FAQ items={[{q,a}...]}/> 컴포넌트(현행 표준 — 2026-06-11 전까지 미스키마)
+  // ②레거시 '## 자주 묻는 질문' 아래 '### 질문' 섹션
   const faqs: { question: string; answer: string }[] = [];
-  if (faqSection) {
-    const faqRegex = /### (.+?)\n\n([\s\S]*?)(?=###|$)/g;
+  const faqComp = post.content.match(/<FAQ[\s\S]*?items=\{\[([\s\S]*?)\]\}/);
+  if (faqComp) {
+    const pairRegex = /q:\s*"([^"]+)"\s*,\s*a:\s*"([^"]+)"/g;
     let match;
-    while ((match = faqRegex.exec(faqSection[0])) !== null) {
-      faqs.push({
-        question: match[1].trim(),
-        answer: match[2].trim(),
-      });
+    while ((match = pairRegex.exec(faqComp[1])) !== null) {
+      faqs.push({ question: match[1].trim(), answer: match[2].trim() });
+    }
+  }
+  if (faqs.length === 0) {
+    const faqSection = post.content.match(/## 자주 묻는 질문[\s\S]*$/);
+    if (faqSection) {
+      const faqRegex = /### (.+?)\n\n([\s\S]*?)(?=###|$)/g;
+      let match;
+      while ((match = faqRegex.exec(faqSection[0])) !== null) {
+        faqs.push({
+          question: match[1].trim(),
+          answer: match[2].trim(),
+        });
+      }
     }
   }
 
