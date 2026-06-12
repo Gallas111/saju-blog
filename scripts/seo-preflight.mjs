@@ -15,7 +15,11 @@ let matter = null;
 try { matter = createRequire(import.meta.url)('gray-matter'); } catch { /* fallback below */ }
 
 const args = process.argv.slice(2);
-const minlen = parseInt((args.find(a => a.startsWith('--minlen='))?.split('=')[1]) || (args[args.indexOf('--minlen') + 1]) || '2500', 10);
+// --minlen 미지정 시 indexOf=-1 → args[0](파일경로) parseInt=NaN으로 자수 체크가 항상 실패하던 버그 fix (2026-06-12)
+const minlenEq = args.find(a => a.startsWith('--minlen='));
+const minlenIdx = args.indexOf('--minlen');
+const minlenParsed = parseInt(minlenEq ? minlenEq.split('=')[1] : (minlenIdx >= 0 ? args[minlenIdx + 1] : ''), 10);
+const minlen = Number.isFinite(minlenParsed) ? minlenParsed : 2500;
 const kwArg = args.includes('--kw') ? args[args.indexOf('--kw') + 1] : null;
 const today = args.includes('--today');
 
