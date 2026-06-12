@@ -32,7 +32,9 @@ function parse(raw) {
   }
   return { fm, body: m[2] };
 }
-const krLen = (s) => (s.replace(/[#*`>\-\[\]()!|]/g, '').replace(/https?:\/\/\S+/g, '').replace(/\s/g, '')).length;
+// 한글 자수 = check-post-length.sh와 동일 기준(가~힣 음절만 집계). 이전 버전은 영문·숫자·기호까지 세서
+// 과대표기(2026-06-12 ai-blog: preflight 2,800 vs 게이트 1,870 사고) — 자수 최종 판정은 어차피 check-post-length지만 표기도 일치시킴.
+const krLen = (s) => (s.match(/[가-힣]/g) || []).length;
 
 function score(file) {
   const raw = fs.readFileSync(file, 'utf8');
@@ -64,7 +66,7 @@ function score(file) {
   add(faq, 10, `FAQ ${fmFaqCount > 0 ? `${fmFaqCount}개(frontmatter)` : faq ? 'O(body)' : 'X'}`, 'FAQ 3~7개(PAA·리치스니펫 기회)');
 
   const len = krLen(body);
-  add(len >= minlen, 14, `본문 ${len}자(≥${minlen})`, `본문 ${minlen}자+로 보강`);
+  add(len >= minlen, 14, `본문 한글 ${len}자(≥${minlen}, 가-힣만)`, `본문 한글 ${minlen}자+로 보강(최종 판정은 check-post-length.sh)`);
 
   const imgs = [...body.matchAll(/!\[([^\]]*)\]\(/g)];
   const emptyAlt = imgs.filter(m => !m[1].trim()).length;
