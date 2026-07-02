@@ -26,6 +26,10 @@ export default function Footer() {
               <li><Link href="/category/타로" className="hover:text-gold transition-colors">타로</Link></li>
               <li><Link href="/category/사주" className="hover:text-gold transition-colors">사주</Link></li>
             </ul>
+            <h3 className="font-semibold text-gold-light mt-5 mb-3">도구</h3>
+            <ul className="space-y-1.5 text-sm text-muted">
+              <li><Link href="/tools/ilju-calculator" className="hover:text-gold transition-colors">📅 일주 계산기</Link></li>
+            </ul>
           </div>
 
           {/* Services */}

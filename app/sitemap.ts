@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { getAllPosts, getPostsByCategory } from "@/lib/posts";
 import { CATEGORIES } from "@/lib/categories";
 import { getAllTags } from "@/lib/tags";
+import { GAPJA_LIST } from "@/lib/ilju";
 
 export const dynamic = "force-static";
 
@@ -47,6 +48,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.4,
   }));
 
+  // 도구: 일주 계산기 + 60갑자 결과 퍼머링크
+  const toolUrls = [
+    {
+      url: `${BASE_URL}/tools/ilju-calculator`,
+      lastModified: new Date("2026-07-02"),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    },
+    ...GAPJA_LIST.map((g) => ({
+      url: `${BASE_URL}/tools/ilju-calculator/${g.slug}`,
+      lastModified: new Date("2026-07-02"),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    })),
+  ];
+
   return [
     {
       url: BASE_URL,
@@ -57,6 +74,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...postUrls,
     ...categoryUrls,
     ...tagUrls,
+    ...toolUrls,
     {
       url: `${BASE_URL}/about`,
       lastModified: new Date("2026-04-28"),
