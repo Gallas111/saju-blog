@@ -182,7 +182,7 @@ export default function AboutPage() {
             <h2>연락처</h2>
             <ul>
               <li>
-                <strong>편집팀 이메일</strong> — kingyw17@gmail.com
+                <strong>편집팀 문의</strong> — 사이트 문의 페이지(/contact)를 이용해 주세요
               </li>
               <li>
                 <strong>운영 도메인</strong> —{" "}
