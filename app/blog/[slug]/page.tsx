@@ -68,7 +68,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-// Static body-image dimension map (built by scripts/gen-image-dims.py).
+// Static body-image dimension map (built by scripts/gen-image-dims.mjs).
 // Injecting width/height lets the browser reserve aspect-ratio space → zero CLS.
 const IMG_DIMS: Record<string, number[]> = imageDims;
 
