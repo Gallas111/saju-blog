@@ -17,6 +17,7 @@ const SITES: Array<{ name: string; siteUrl: string }> = [
   { name: 'baby-blog', siteUrl: 'sc-domain:babytodak.com' },
   { name: 'health-blog', siteUrl: 'https://www.wellnesstodays.com/' },
   { name: 'bukbukstock', siteUrl: 'sc-domain:bukbukstock.com' },
+  { name: 'lottohanpan', siteUrl: 'sc-domain:lottohanpan.com' },
   { name: 'coinday', siteUrl: 'sc-domain:coindaynow.com' },
   { name: 'quicktools', siteUrl: 'sc-domain:toolkio.com' },
   { name: 'tokennara', siteUrl: 'sc-domain:tokennara.com' },

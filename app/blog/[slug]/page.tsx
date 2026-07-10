@@ -50,6 +50,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       publishedTime: post.date,
       tags: post.tags,
     },
+    // Per-post Twitter/X card. Without this, layout.tsx's static twitter block
+    // (generic site title/description/og-default.png) is inherited on every post.
+    // No image is set here on purpose: Next inherits openGraph.images — which the
+    // opengraph-image.tsx file convention populates — into twitter:image.
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.description,
+    },
     alternates: {
       canonical: `/blog/${slug}`,
     },

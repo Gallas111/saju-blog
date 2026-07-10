@@ -1,5 +1,5 @@
 /**
- * GSC 키워드 카니발리제이션 감지 — 9개 사이트
+ * GSC 키워드 카니발리제이션 감지 — 11개 사이트
  *
  * 같은 검색 쿼리에 여러 URL이 노출되는 패턴을 찾아내고
  * 약한 URL → 강한 URL 정리(301/noindex/머지) 후보를 리포트.
@@ -20,9 +20,9 @@
  *
  * 판정 룰:
  *   - 같은 query에 우리 사이트 URL 2개 이상 노출
- *   - winner: imp 최다 (또는 clicks 최다)
- *   - loser: position > winner+5 또는 ctr < winner/3
- *   - impact score: query 총 imp × URL 갯수
+ *   - winner: clicks 최다 (동률이면 imp 최다)
+ *   - loser: position > winner+10 또는 ctr < winner/3
+ *   - impact score: query 총 imp × (URL 갯수)^2
  */
 import { google } from 'googleapis';
 import * as path from 'path';

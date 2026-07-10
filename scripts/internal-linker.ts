@@ -39,6 +39,60 @@ function buildIndex(dir: string) {
 }
 
 /**
+ * Escape a string so it can be used as a literal inside a RegExp.
+ */
+function escapeRegex(s: string): string {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Compute character ranges covered by fenced code blocks (``` ... ```)
+ * and inline `code` spans. Candidate matches overlapping these ranges are
+ * rejected so we never rewrite text inside code samples.
+ */
+function getCodeRanges(text: string): Array<[number, number]> {
+    const ranges: Array<[number, number]> = [];
+
+    // Fenced code blocks: a line starting with ``` toggles in/out of a fence.
+    const lines = text.split('\n');
+    let offset = 0;
+    let fenceStart = -1;
+    for (const line of lines) {
+        if (line.trimStart().startsWith('```')) {
+            if (fenceStart === -1) {
+                fenceStart = offset;
+            } else {
+                ranges.push([fenceStart, offset + line.length]);
+                fenceStart = -1;
+            }
+        }
+        offset += line.length + 1; // +1 for the '\n' consumed by split
+    }
+    if (fenceStart !== -1) {
+        ranges.push([fenceStart, text.length]); // unclosed fence -> to EOF
+    }
+
+    // Inline code spans: `...` (single line, best-effort/cheap).
+    const inlineRe = /`[^`\n]+`/g;
+    let m: RegExpExecArray | null;
+    while ((m = inlineRe.exec(text)) !== null) {
+        ranges.push([m.index, m.index + m[0].length]);
+    }
+
+    return ranges;
+}
+
+/**
+ * True if [start, end) overlaps any of the given ranges.
+ */
+function overlapsRange(start: number, end: number, ranges: Array<[number, number]>): boolean {
+    for (const [rs, re] of ranges) {
+        if (start < re && end > rs) return true;
+    }
+    return false;
+}
+
+/**
  * Insert links naturally into the content
  */
 function processPost(targetPost: PostIndex) {
@@ -52,6 +106,10 @@ function processPost(targetPost: PostIndex) {
     const sortedDb = [...postDatabase]
         .filter(p => p.slug !== targetPost.slug) // Don't link to self
         .sort((a, b) => b.title.length - a.title.length);
+
+    // Character ranges covered by code (fences + inline). Recomputed after each
+    // insertion, since inserting a link shifts the indices of later code.
+    let codeRanges = getCodeRanges(newContent);
 
     for (const sourcePost of sortedDb) {
         if (linkCount >= MAX_LINKS) break;
@@ -71,7 +129,7 @@ function processPost(targetPost: PostIndex) {
             // Simple approach for natural Korean text: check if it exists in body but not in a link
             if (newContent.includes(term)) {
                 // Check if it's already linked
-                const alreadyLinkedRegex = new RegExp(`\\[.*${term}.*\\]\\(/blog/`, 'i');
+                const alreadyLinkedRegex = new RegExp(`\\[.*${escapeRegex(term)}.*\\]\\(/blog/`, 'i');
                 if (alreadyLinkedRegex.test(newContent)) continue;
 
                 // Simple check for headers: term shouldn't be preceded by # on the same line
@@ -82,12 +140,18 @@ function processPost(targetPost: PostIndex) {
                 const markdownLink = `[${linkLabel}](${linkUrl})`;
 
                 // Replace only the first occurrence
-                const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const escapedTerm = escapeRegex(term);
                 const termRegex = new RegExp(escapedTerm, ''); // Only first match
 
                 // Avoid replacing inside existing brackets or URLs
                 // This is a complex task for pure regex, so we do a simple check
                 const snippetIndex = newContent.indexOf(term);
+
+                // Reject matches inside (or straddling) a fenced/inline code region.
+                if (overlapsRange(snippetIndex, snippetIndex + term.length, codeRanges)) {
+                    continue;
+                }
+
                 const precedingText = newContent.slice(Math.max(0, snippetIndex - 20), snippetIndex);
                 const followingText = newContent.slice(snippetIndex + term.length, snippetIndex + term.length + 20);
 
@@ -96,6 +160,7 @@ function processPost(targetPost: PostIndex) {
                 }
 
                 newContent = newContent.replace(termRegex, markdownLink);
+                codeRanges = getCodeRanges(newContent); // insertion shifted subsequent indices
                 console.log(`🔗 Linked "${term}" to /blog/${sourcePost.slug} in ${targetPost.slug}`);
                 linkCount++;
                 break; // Move to next source post once one term is linked

@@ -1,6 +1,6 @@
 /**
  * SEO 발행 전 게이트 (on-page rank-readiness linter) — 블로그 무관 범용.
- * 신규 포스트가 "상위노출 준비됨" 상태인지 발행 전 자동 채점. 100점, 통과 기준 80.
+ * 신규 포스트가 "상위노출 준비됨" 상태인지 발행 전 자동 채점. 110점 만점 / 통과 75% (82.5점).
  * 사용법:
  *   node scripts/seo-preflight.mjs <file.mdx> [--minlen 2500] [--kw "타깃 키워드"]
  *   node scripts/seo-preflight.mjs --today [--minlen N]   (오늘 date frontmatter 글 일괄)
@@ -45,7 +45,9 @@ function score(file) {
   const { fm, body } = parse(raw);
   const kw = String(kwArg || fm.targetKeyword || fm.title || '');
   const kwTokens = kw.replace(/[^\wㄱ-힣 ]/g, ' ').split(/\s+/).filter(w => w.length >= 2);
-  const hasKw = (txt) => kwTokens.length === 0 ? true : kwTokens.some(t => txt.includes(t));
+  // kwTokens가 비면(1글자 토큰만 있는 제목 등) 타깃 키워드를 추정할 수 없음 → 키워드 검사는 모두 실패 처리.
+  const hasKw = (txt) => kwTokens.length === 0 ? false : kwTokens.some(t => txt.includes(t));
+  const noKwFix = '타깃 키워드를 추정하지 못함 — frontmatter에 targetKeyword 추가';
   const checks = [];
   const add = (pass, pts, label, fix) => checks.push({ pass, pts: pass ? pts : 0, max: pts, label, fix: pass ? '' : fix });
 
@@ -53,13 +55,13 @@ function score(file) {
   add(!!title && title.length <= 70, 12, `제목 존재·≤70자 (${title.length}자)`, '제목 60~70자로, 타깃 키워드 포함');
   const desc = String(fm.description || '');
   add(desc.length >= 60 && desc.length <= 165, 14, `메타 description ${desc.length}자(60~165)`, 'description 70~160자 작성');
-  add(hasKw(title) || hasKw(desc), 10, '키워드가 제목/메타에', '타깃 키워드를 제목 또는 description에 자연 포함');
+  add(hasKw(title) || hasKw(desc), 10, '키워드가 제목/메타에', kwTokens.length === 0 ? noKwFix : '타깃 키워드를 제목 또는 description에 자연 포함');
 
   const first = body.slice(0, 400);
-  add(hasKw(first), 10, '키워드 첫 문단 등장', '도입부 100단어 안에 타깃 키워드 자연 등장');
+  add(hasKw(first), 10, '키워드 첫 문단 등장', kwTokens.length === 0 ? noKwFix : '도입부 100단어 안에 타깃 키워드 자연 등장');
 
   const h2 = (body.match(/^##\s+.+$/gm) || []);
-  add(h2.length >= 3 && h2.some(h => hasKw(h)), 12, `H2 ${h2.length}개·키워드 H2 ${h2.some(h => hasKw(h)) ? 'O' : 'X'}`, 'H2 3개+ & 최소 1개 H2에 키워드');
+  add(h2.length >= 3 && h2.some(h => hasKw(h)), 12, `H2 ${h2.length}개·키워드 H2 ${h2.some(h => hasKw(h)) ? 'O' : 'X'}`, kwTokens.length === 0 ? noKwFix : 'H2 3개+ & 최소 1개 H2에 키워드');
 
   const internal = (body.match(/\]\(\/blog\//g) || []).length;
   add(internal >= 2, 14, `내부링크 ${internal}개(≥2)`, '같은 블로그 관련글 2~3개 본문 링크(/blog/slug)');
