@@ -20,7 +20,7 @@ export default function AdSlot({
   layout,
   layoutKey,
   responsive = true,
-  minHeight = 120,
+  minHeight = 250,
   className,
   style,
   label = "광고",
@@ -44,6 +44,9 @@ export default function AdSlot({
       style={{
         margin: "32px 0",
         textAlign: "center",
+        // CLS 방지: 광고가 더 크게 렌더되거나 미충족으로 붕괴해도
+        // 예약 높이를 컨테이너 레벨에서 유지해 콘텐츠 이동(레이아웃 시프트)을 막는다.
+        minHeight: `${minHeight}px`,
         ...style,
       }}
       aria-label={label}
