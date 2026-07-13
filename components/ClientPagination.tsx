@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import BlogCard from "./BlogCard";
-import type { PostMeta } from "@/lib/posts";
+import type { PostCard } from "@/lib/posts";
 
 const POSTS_PER_PAGE = 10;
 
 interface ClientPaginationProps {
-  posts: PostMeta[];
+  posts: PostCard[];
 }
 
 export default function ClientPagination({ posts }: ClientPaginationProps) {

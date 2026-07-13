@@ -1,8 +1,8 @@
 import Link from "next/link";
-import type { PostMeta } from "@/lib/posts";
+import type { PostCard } from "@/lib/posts";
 
 interface FeaturedPostsProps {
-  posts: PostMeta[];
+  posts: PostCard[];
 }
 
 const FEATURED_SLUGS = [
@@ -14,7 +14,7 @@ const FEATURED_SLUGS = [
 export default function FeaturedPosts({ posts }: FeaturedPostsProps) {
   const featured = FEATURED_SLUGS.map((slug) =>
     posts.find((p) => p.slug === slug)
-  ).filter(Boolean) as PostMeta[];
+  ).filter(Boolean) as PostCard[];
 
   if (featured.length === 0) return null;
 

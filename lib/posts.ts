@@ -101,6 +101,30 @@ export function getAllPosts(): PostMeta[] {
   );
 }
 
+// 목록/카드용 경량 투영: 카드가 실제로 쓰는 필드만.
+// keywords(primary/secondary/longTail)·relatedService 등 SEO 전용 메타를
+// 클라이언트 컴포넌트(FeaturedPosts/ClientPagination)로 직렬화하지 않아
+// 홈 RSC 페이로드(848편 기준 ~600KB)를 크게 줄여 LCP를 개선한다.
+export type PostCard = Pick<
+  PostMeta,
+  "slug" | "title" | "description" | "category" | "date" | "icon" | "readingTime" | "tags"
+>;
+
+export function getAllPostCards(): PostCard[] {
+  return getAllPosts().map(
+    ({ slug, title, description, category, date, icon, readingTime, tags }) => ({
+      slug,
+      title,
+      description,
+      category,
+      date,
+      icon,
+      readingTime,
+      tags,
+    })
+  );
+}
+
 export function getPostBySlug(slug: string): Post | null {
   return loadAllPosts().get(slug) ?? null;
 }

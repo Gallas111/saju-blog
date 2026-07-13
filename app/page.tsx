@@ -1,4 +1,4 @@
-import { getAllPosts } from "@/lib/posts";
+import { getAllPostCards } from "@/lib/posts";
 import { getAllTags } from "@/lib/tags";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -8,7 +8,7 @@ import TagCloud from "@/components/TagCloud";
 import ClientPagination from "@/components/ClientPagination";
 
 export default function HomePage() {
-  const posts = getAllPosts();
+  const posts = getAllPostCards();
   const tags = getAllTags();
 
   return (

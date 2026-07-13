@@ -1,8 +1,8 @@
 import Link from "next/link";
-import type { PostMeta } from "@/lib/posts";
+import type { PostCard } from "@/lib/posts";
 
 interface BlogCardProps {
-  post: PostMeta;
+  post: PostCard;
 }
 
 export default function BlogCard({ post }: BlogCardProps) {
