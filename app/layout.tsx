@@ -112,23 +112,24 @@ export default function RootLayout({
         />
         {children}
         <ScrollTracker />
-        {/* Ad/analytics scripts placed at the end of <body> (afterInteractive),
-            matching coinday/ai-blog. Note: Next.js still emits a
-            <link rel="preload" as="script"> in <head> for afterInteractive
-            scripts regardless of JSX position — removing that preload would
-            require strategy="lazyOnload", which we intentionally avoid here to
-            keep ad/gtag load timing unchanged. */}
+        {/* Ad/analytics scripts: strategy="lazyOnload" (2026-07-14 CWV fix).
+            afterInteractive made Next.js emit a <link rel="preload" as="script">
+            in <head> for adsbygoogle/gtag, which competed with LCP-critical
+            resources on throttled mobile (measured: FCP 6.1s, LCP 11.9s; with
+            ads blocked LCP dropped to 6.3s). lazyOnload removes that head preload
+            and defers third-party JS until after window load, so the LCP text
+            paints first. Trade-off: ads/analytics load slightly later. */}
         <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1022869499967960"
           crossOrigin="anonymous"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-P8GS2YYFC2"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
-        <Script id="gtag-init" strategy="afterInteractive">
+        <Script id="gtag-init" strategy="lazyOnload">
           {`window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
