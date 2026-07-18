@@ -25,6 +25,7 @@ export interface PostMeta {
   };
   published: boolean;
   noindex?: boolean;
+  canonical?: string;
   readingTime: number;
 }
 
@@ -60,6 +61,7 @@ function parseFrontmatter(fileContent: string, fileName: string): Post | null {
     },
     published: data.published ?? true,
     noindex: data.noindex === true,
+    canonical: data.canonical ?? undefined,
     readingTime: calculateReadingTime(content),
     content,
   };

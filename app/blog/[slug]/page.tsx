@@ -60,7 +60,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: post.description,
     },
     alternates: {
-      canonical: `/blog/${slug}`,
+      canonical: post.canonical ?? `/blog/${slug}`,
     },
     ...(post.noindex && {
       robots: { index: false, follow: true },
