@@ -7,7 +7,9 @@
     "build": "node scripts/gen-image-dims.mjs && npx tsx scripts/generate-feed.ts && npx tsx scripts/generate-search-index.ts && next build --webpack",
     "start": "next start",
     "lint": "eslint",
-    "growth:focused-report": "tsx scripts/generate-focused-report.ts"
+    "growth:focused-report": "tsx scripts/generate-focused-report.ts",
+    "blog:gate": "tsx scripts/publish-gate.ts",
+    "blog:validate": "tsx scripts/validate-links.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
