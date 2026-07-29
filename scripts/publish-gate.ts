@@ -28,7 +28,7 @@ import path from 'path';
 import { execSync } from 'child_process';
 import matter from 'gray-matter';
 import { loadGateConfig, resolveSlug, GateConfig } from './gate-config';
-import { getAllSlugs, getMdxFiles, checkInternalLinksInFiles, checkImagesInFiles, IMG_SRC_RE } from './validate-links';
+import { getAllSlugs, getMdxFiles, checkInternalLinksInFiles, checkImagesInFiles, IMG_SRC_RE, BLOG_LINK_RE } from './validate-links';
 
 const CONTENT_DIR = path.join(process.cwd(), 'content');
 const PUBLIC_DIR = path.join(process.cwd(), 'public');
@@ -379,7 +379,8 @@ function removeLinksToQuarantined(quarantinedSlugs: string[], dryRun: boolean): 
   const touched: string[] = [];
   for (const f of getMdxFiles()) {
     const raw = fs.readFileSync(f, 'utf-8');
-    const fixed = raw.replace(/\[([^\]]+)\]\(\/blog\/([^)]+)\)/g, (whole, label, slug) => (isGone(slug) ? label : whole));
+    // 검사와 언랩이 같은 패턴을 써야 한다. 다르면 "검사에서 걸린 링크를 언랩하지 못하는" 구멍이 생긴다.
+    const fixed = raw.replace(new RegExp(BLOG_LINK_RE.source, 'g'), (whole, label, slug) => (isGone(slug) ? label : whole));
     if (fixed !== raw) {
       touched.push(path.relative(process.cwd(), f));
       if (!dryRun) fs.writeFileSync(f, fixed);

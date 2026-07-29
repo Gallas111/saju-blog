@@ -56,12 +56,22 @@ export function getAllSlugs(): Set<string> {
   return slugs;
 }
 
+/**
+ * `/blog/<slug>` 내부 링크. 앵커 텍스트의 **중첩 대괄호 한 단계**를 허용한다.
+ *
+ * 🔴 원본 `\[([^\]]+)\]` 는 첫 `]` 에서 멈춰서, 봇이 만든 `[[2026 최신] 만성피로 극복법](/blog/x)`
+ * 같은 앵커를 **한 건도 잡지 못했다**. CommonMark 는 균형 잡힌 중첩 대괄호를 링크 텍스트로
+ * 허용하므로 이런 링크는 실제로 렌더링되고, 대상이 없으면 진짜 404 다.
+ * 2026-07-29 health-blog 정리에서 이 사각지대로 2건이 검사망을 빠져나간 것이 확인됐다.
+ */
+export const BLOG_LINK_RE = /\[((?:[^[\]]|\[[^[\]]*\])+)\]\(\/blog\/([^)]+)\)/g;
+
 export function checkInternalLinksInFiles(files: string[], slugs: Set<string>): Issue[] {
   const { validCategories } = loadGateConfig();
   const issues: Issue[] = [];
   for (const f of files) {
     const content = fs.readFileSync(f, 'utf-8');
-    const linkRegex = /\[([^\]]+)\]\(\/blog\/([^)]+)\)/g;
+    const linkRegex = new RegExp(BLOG_LINK_RE.source, 'g');
     let match: RegExpExecArray | null;
     while ((match = linkRegex.exec(content)) !== null) {
       const slug = match[2];
