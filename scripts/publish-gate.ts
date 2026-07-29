@@ -69,6 +69,15 @@ function gitLines(cmd: string): string[] {
  * 추적 파일에 미커밋 변경이 있으면 그 명령이 남의 작업까지 날린다. 미추적(??)은 정상이므로 통과시킨다.
  */
 function assertCleanTree(): void {
+  // 🔴 파이프라인(GHA) 안에서는 검사하지 않는다.
+  // 이 가드의 목적은 "오격리가 나면 git checkout 으로 되돌릴 수 있게" 트리를 깨끗이 두는 것인데,
+  // 워크플로는 매 회차 추적 파일을 정상적으로 고친다: 3·4단계가 scripts/keywords.json 을 기록하고
+  // 7단계 internal-linker 가 기존 mdx 를 다시 쓴다. 그래서 CI 에서 이 검사를 켜 두면
+  // **글이 한 편이라도 생성된 회차는 게이트가 무조건 exit 1** 이 되어 발행이 통째로 막힌다.
+  // CI 는 매번 새 클론이라 되돌릴 로컬 작업물도 없으므로 보호 대상 자체가 없다.
+  // (2026-07-29 이식 중 도입한 가드의 부작용. 적대적 문서 검증에서 발견.)
+  if (process.env.GITHUB_ACTIONS === 'true' || process.env.GATE_ALLOW_DIRTY === '1') return;
+
   let lines: string[];
   try {
     lines = gitLines('git -c core.quotepath=false status --porcelain');
@@ -137,9 +146,33 @@ function assertCorpusSane(slugs: Set<string>): void {
   }
 }
 
+/**
+ * 🔴 팩트체커 모듈을 **동적** import 로 바꾸면서 잃어버린 부작용을 여기서 되살린다.
+ *
+ * 원본은 `import { callGemini } from './utils/ai-utils'` 가 모듈 최상단에 있었고,
+ * 그 파일이 로드되는 순간 `dotenv.config()` 가 돌아 `.env`·`.env.local` 이 실렸다.
+ * 동적 import 로 바꾸니 그 로딩이 첫 팩트체크 호출 시점까지 미뤄지고, 그 앞에서 도는
+ * 키 존재 검사가 "키가 있는데도 없다"고 판정해 발행을 통째로 막는다.
+ * (2026-07-29 ai-blog 이식 중 실측. 이 레포만 factCheck: 'strict' 라 여기서만 드러났다.)
+ *
+ * dotenv 가 없는 레포도 있으므로 실패해도 조용히 넘어간다 — 그 경우 키 검사가 정상적으로
+ * "없다"고 판정하는 것이 맞다.
+ */
+function loadEnvForFactCheck(): void {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const dotenv = require('dotenv');
+    dotenv.config();
+    dotenv.config({ path: path.join(process.cwd(), '.env.local') });
+  } catch {
+    /* dotenv 미설치 레포 — 키 검사가 그대로 진행된다 */
+  }
+}
+
 /** factCheck: 'strict' 인데 전제가 없으면 글 검사 전에 멈춘다. 대량 격리를 설정 오류로 전환한다. */
 function assertFactCheckReady(cfg: GateConfig): void {
   if (cfg.factCheck !== 'strict') return;
+  loadEnvForFactCheck();
   if (!fs.existsSync(RESEARCH_DIR)) {
     throw new Error(
       `factCheck: 'strict' 인데 .research-cache/ 가 없다.\n` +
@@ -397,7 +430,24 @@ const progress: { passed: string[]; quarantined: { slug: string; reasons: string
 
 async function main() {
   const cfg = loadGateConfig();
-  const minKorean = parseInt(process.env.GATE_MIN_KOREAN || String(cfg.minKorean), 10);
+  // 🔴 NaN 가드. 없으면 `GATE_MIN_KOREAN=2,500` 같은 오타가 NaN 이 되고,
+  // `kr < NaN` 이 항상 false 라 **자수 검사가 조용히 통째로 꺼진다**(로그에는 "한글 NaN자"로만 찍힌다).
+  // config 경로는 gate-config.ts 가 Number.isInteger 로 검증하는데 env 경로만 무검증이었다.
+  // 🔴 `parseInt` 로 검증하면 안 된다. `parseInt("2,500", 10)` 은 NaN 이 아니라 **2** 다.
+  //    즉 오타가 "검사 꺼짐"이 아니라 "컷이 2자로 떨어짐"이 되어 더 나쁘다(실측 확인).
+  //    문자열 전체가 숫자인지를 먼저 본다.
+  const rawMin = process.env.GATE_MIN_KOREAN;
+  let minKorean = cfg.minKorean;
+  if (rawMin !== undefined && rawMin.trim() !== '') {
+    const s = rawMin.trim();
+    if (!/^\d+$/.test(s) || parseInt(s, 10) <= 0) {
+      throw new Error(
+        `GATE_MIN_KOREAN 이 양의 정수가 아니다: "${rawMin}"\n` +
+        `  쉼표·단위·공백이 섞이면 앞부분만 잘려 컷이 엉뚱한 값이 된다(예: "2,500" → 2).`
+      );
+    }
+    minKorean = parseInt(s, 10);
+  }
 
   assertFactCheckReady(cfg);
 
