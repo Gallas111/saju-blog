@@ -28,7 +28,7 @@ import path from 'path';
 import { execSync } from 'child_process';
 import matter from 'gray-matter';
 import { loadGateConfig, resolveSlug, GateConfig } from './gate-config';
-import { getAllSlugs, getMdxFiles, checkInternalLinksInFiles, checkImagesInFiles, IMG_SRC_RE, BLOG_LINK_RE } from './validate-links';
+import { getAllSlugs, getMdxFiles, checkInternalLinksInFiles, checkImagesInFiles, checkEncodingInFiles, IMG_SRC_RE, BLOG_LINK_RE } from './validate-links';
 
 const CONTENT_DIR = path.join(process.cwd(), 'content');
 const PUBLIC_DIR = path.join(process.cwd(), 'public');
@@ -425,7 +425,12 @@ async function main() {
     const reasons: string[] = [];
     const { data, content } = matter(fs.readFileSync(file, 'utf-8'));
 
-    for (const issue of [...checkInternalLinksInFiles([file], slugs), ...checkImagesInFiles([file])]) {
+    // broken-encoding 은 되돌릴 수 없는 손상이라(원본 바이트 소실) 발행 전에 막는 것이 유일한 방어다.
+    for (const issue of [
+      ...checkInternalLinksInFiles([file], slugs),
+      ...checkImagesInFiles([file]),
+      ...checkEncodingInFiles([file]),
+    ]) {
       reasons.push(`${issue.type}: ${issue.detail}`);
     }
 

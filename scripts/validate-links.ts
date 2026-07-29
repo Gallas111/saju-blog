@@ -22,8 +22,38 @@ const REDIRECTS_PATH = path.join(process.cwd(), 'redirects.json');
 
 export interface Issue {
   file: string;
-  type: 'broken-link' | 'broken-image' | 'broken-redirect';
+  type: 'broken-link' | 'broken-image' | 'broken-redirect' | 'broken-encoding';
   detail: string;
+}
+
+/**
+ * U+FFFD(치환 문자) 검사.
+ *
+ * 이 문자가 파일에 들어가면 그 자리의 한글은 **이미 소실된 것**이다. 원본 바이트가
+ * 사라진 뒤라 어떤 도구로도 되돌릴 수 없고, 사람이 문맥으로 다시 쓰는 수밖에 없다.
+ * 그래서 "생긴 뒤에 고치는" 것이 아니라 "들어오는 순간 막는" 것이 유일한 방어다.
+ *
+ * 2026-07-29 실측: 9개 레포에 47곳이 있었고 그중 하나는 `title` 프론트매터라
+ * 검색결과 제목에 깨진 글자가 그대로 노출되고 있었다. 몇 달 동안 아무도 몰랐던 이유는
+ * 이걸 검사하는 코드가 어디에도 없었기 때문이다.
+ */
+export function checkEncodingInFiles(files: string[]): Issue[] {
+  const issues: Issue[] = [];
+  for (const f of files) {
+    const content = fs.readFileSync(f, 'utf-8');
+    if (!content.includes('�')) continue;
+    const lines = content.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      if (!lines[i].includes('�')) continue;
+      const snippet = lines[i].trim().slice(0, 80);
+      issues.push({
+        file: path.relative(process.cwd(), f),
+        type: 'broken-encoding',
+        detail: `${i + 1}행: ${snippet}`,
+      });
+    }
+  }
+  return issues;
 }
 
 /**
@@ -179,9 +209,13 @@ function runCli() {
   const linkIssues = checkInternalLinksInFiles(files, slugs);
   const imageIssues = checkImagesInFiles(files);
   const redirectIssues = checkRedirects(slugs);
-  const allIssues = [...linkIssues, ...imageIssues, ...redirectIssues];
+  const encodingIssues = checkEncodingInFiles(files);
+  const allIssues = [...linkIssues, ...imageIssues, ...redirectIssues, ...encodingIssues];
 
-  console.log(`[corpus] broken-link ${linkIssues.length} · broken-image ${imageIssues.length} · broken-redirect ${redirectIssues.length}`);
+  console.log(
+    `[corpus] broken-link ${linkIssues.length} · broken-image ${imageIssues.length} · ` +
+    `broken-redirect ${redirectIssues.length} · broken-encoding ${encodingIssues.length}`
+  );
 
   if (allIssues.length === 0) {
     console.log('All links, images, and redirects are valid!');
@@ -190,7 +224,10 @@ function runCli() {
   }
   const lines = [`Found ${allIssues.length} issue(s):`, ''];
   for (const issue of allIssues) {
-    const icon = issue.type === 'broken-link' ? '[LINK]' : issue.type === 'broken-image' ? '[IMAGE]' : '[REDIRECT]';
+    const icon = issue.type === 'broken-link' ? '[LINK]'
+      : issue.type === 'broken-image' ? '[IMAGE]'
+      : issue.type === 'broken-encoding' ? '[ENCODING]'
+      : '[REDIRECT]';
     lines.push(`  ${icon} ${issue.file}`, `     -> ${issue.detail}`, '');
   }
   process.stderr.write(lines.join('\n') + '\n');
