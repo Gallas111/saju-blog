@@ -32,6 +32,16 @@ import sys, os, re, io, glob, json, hashlib, subprocess, unicodedata, tempfile, 
 from collections import defaultdict
 from urllib.parse import unquote
 
+# 🔴 2026-08-04: 콘솔 기본 인코딩(cp949)에서 리포트의 em 대시(U+2014)를 만나면
+# report() 가 UnicodeEncodeError 로 죽고 exit 1 을 냈다. 위반이 아니라 '출력 크래시'인데
+# 종료코드가 위반과 같아서, 통과한 레포를 실패로 오판하게 만든다(77회차에 에이전트 4명이 동시에 걸렸다).
+# keyword-research.py 와 같은 처방 — 진행 로그의 유니코드가 결과 판정을 막지 않게 한다.
+for _s in (sys.stdout, sys.stderr):
+    try:
+        _s.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+
 BASE = r'C:\Users\owner\OneDrive\바탕 화면\사이트'
 REPOS = ['ai-blog', 'saju-blog', 'coinday', 'bukbukstock', 'tokennara',
          'altnara', 'easy-zetec', 'baby-blog', 'health-blog']
