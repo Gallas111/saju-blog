@@ -110,6 +110,14 @@ export default async function BlogPostPage({ params }: Props) {
       faqs.push({ question: match[1].trim(), answer: match[2].trim() });
     }
   }
+  // ③레거시 <FAQ><FAQItem q="" a="" /></FAQ> 형식(2026-05월 생성분 30편)
+  if (faqs.length === 0 && post.content.includes("<FAQItem")) {
+    const itemRegex = /<FAQItem[\s\S]*?q="([^"]*)"[\s\S]*?a="([^"]*)"/g;
+    let match;
+    while ((match = itemRegex.exec(post.content)) !== null) {
+      faqs.push({ question: match[1].trim(), answer: match[2].trim() });
+    }
+  }
   if (faqs.length === 0) {
     const faqSection = post.content.match(/## 자주 묻는 질문[\s\S]*$/);
     if (faqSection) {
@@ -123,6 +131,16 @@ export default async function BlogPostPage({ params }: Props) {
       }
     }
   }
+
+  // 본문에서 <FAQ ...> 블록을 걷어낸다. react-markdown 은 이 블록을 파싱하지 못해
+  // 원문 그대로를 독자에게 노출시켜 왔다(2026-08-04 확인, 380편 해당).
+  // 질문·답변은 위에서 이미 뽑아 뒀으므로 아래에서 실제 마크업으로 다시 그린다.
+  // 🔴 뽑은 게 없으면 지우지 않는다 — 다시 그릴 수 없는 내용을 삭제하지 않기 위해서다.
+  const bodyContent =
+    faqs.length > 0
+      ? post.content.replace(/<FAQ\b[\s\S]*?(?:\]\}\s*\/>|<\/FAQ>)/, "")
+      : post.content;
+  const hadFaqBlock = bodyContent !== post.content;
 
   return (
     <>
@@ -253,12 +271,12 @@ export default async function BlogPostPage({ params }: Props) {
               },
             };
 
-            const sections = post.content.split(/(?=^## )/gm);
+            const sections = bodyContent.split(/(?=^## )/gm);
             const injectAfter = sections.length >= 5 ? 2 : 1;
             const midPoint =
               sections.length >= 7 ? Math.floor(sections.length / 2) : -1;
 
-            return sections.map((section, i) => (
+            const rendered = sections.map((section, i) => (
               <Fragment key={i}>
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
@@ -282,6 +300,20 @@ export default async function BlogPostPage({ params }: Props) {
                 )}
               </Fragment>
             ));
+
+            if (!hadFaqBlock) return rendered;
+
+            return (
+              <>
+                {rendered}
+                {faqs.map((faq, i) => (
+                  <Fragment key={`faq-${i}`}>
+                    <h3>{faq.question}</h3>
+                    <p>{faq.answer}</p>
+                  </Fragment>
+                ))}
+              </>
+            );
           })()}
         </article>
 
