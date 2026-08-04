@@ -1,0 +1,94 @@
+# 풍수 식물 배치 7가지 자가진단 — 금전수·산세베리아를 어느 방에 둘지와 피해야 할 자리
+
+수집일 2026-08-04 (77회차)
+
+## 확인된 사실
+
+### 한국민족문화대백과사전 「풍수(風水)」 (E0060401)
+- 「정의」는 풍수를 "생기가 흩어지고 머무는 현상에서 시작해 음양론과 오행설을 토대로 땅에 관한 이치를 체계화하여 길흉화복을 설명하는 종교용어"로 적었다. 이칭은 "풍수지리·감여설"이다 — 출처: https://encykorea.aks.ac.kr/Article/E0060401
+- 「개설」은 풍수의 "구성은 산(山) · 수(水) · 방위(方位) · 사람 등 네 가지의 조합으로 성립되며"라고 적었다 — 출처: https://encykorea.aks.ac.kr/Article/E0060401
+- 「개설」은 어원을 중국 동진 곽박(郭璞)의 『장서(葬書)』에서 찾으며 "그 기는 바람을 타면 흩어져버리고 물에 닿으면 머문다. 그래서 바람과 물을 이용하여 기를 얻는 법술을 풍수라 일컫게 되었다"는 대목을 인용했다 — 출처: https://encykorea.aks.ac.kr/Article/E0060401
+- 「개설」은 "풍(風)은 기후와 풍토를 지칭하며, 수(水)는 물과 관계된 모든 것을 가리키고 있다. 따라서, 풍수의 대상은 현대 지리학의 관심분야와 다를 것이 없다"고 적었다 — 출처: https://encykorea.aks.ac.kr/Article/E0060401
+- 같은 문단은 풍수가 다뤄 온 일을 열거하며 "도읍이나 마을의 자리 잡기, 집터 잡기, 물자리 찾기, **정원수의 배치**, 길내기 등은 말할 것도 없고"라고 적었다. 즉 나무·식물의 배치는 풍수가 원래 다뤄 온 항목 안에 들어 있다 — 출처: https://encykorea.aks.ac.kr/Article/E0060401
+- 「개설」은 "풍수의 기본논리는 일정한 경로를 따라 땅 속을 돌아다니는 생기(生氣)를 사람이 접함으로써 복을 얻고 화를 피하자는 것"이라고 적었다 — 출처: https://encykorea.aks.ac.kr/Article/E0060401
+- 「도읍풍수」 절의 개성 대목은 "역세(逆勢)의 수덕(水德)을 진압하고, 지덕(地德)을 비보(裨補)하기 위하여 도선의 사탑비보설(寺塔裨補說)을 응용하여, 계류의 합류점과 내수구(內水口)에 사찰을 건립하였다"고 적었다. 부족한 곳을 인공물로 채우는 비보 개념이 실제 적용된 사례다 — 출처: https://encykorea.aks.ac.kr/Article/E0060401
+  - 🔴 조건: 이 대목이 말하는 비보 사례는 **사찰 건립**이다. 실내 화분에 이 논리를 옮기는 것은 본문의 해석이며 사전이 말한 내용이 아니다. 본문에서 반드시 갈라 쓸 것.
+- 이 항목에는 "본 항목의 내용은 해당 분야 전문가의 추천으로 선정된 집필자의 학술적 견해로, 한국학중앙연구원의 공식 입장과 다를 수 있습니다"라는 고지가 붙어 있다 — 출처: https://encykorea.aks.ac.kr/Article/E0060401
+
+### 한국민족문화대백과사전 「윤도(輪圖)」 (E0042277)
+- 「정의」는 윤도를 "풍수가(風水家)나 지관(地官)들이 방위를 헤아릴때 사용한 기구"로 적었다 — 출처: https://encykorea.aks.ac.kr/Article/E0042277
+- 「내용」은 "가운데에 지남침을 장치하고 가장자리에 원을 그려 24방위로 나누어 놓아, 방위를 헤아릴 때 사용했다"고 적었다 — 출처: https://encykorea.aks.ac.kr/Article/E0042277
+- 오행과 방위의 대응은 "오행은 동에 목, 서에 금, 남에 화, 북에 수, 그리고 토를 중앙에 두고 있기 때문에"라고 명시돼 있다 — 출처: https://encykorea.aks.ac.kr/Article/E0042277
+- 팔괘 방위는 "4정방(四正方)에는 정동(正東)에 진(震), 정서(正西)에 태(兌), 정남(正南)에 이(離), 정북(正北)에 감(坎)을 배치하고, 4우방(四隅方)에는 남동(南東)에 손(巽), 남서(南西)에 곤(坤), 북서(北西)에 건(乾), 북동(北東)에 간(艮)을 배치하여 8방(八方)을 삼았다"고 적었다 — 출처: https://encykorea.aks.ac.kr/Article/E0042277
+  - 🔴 조건: 이 항목은 **방위 이름의 배치**만 말한다. 어느 방위에 어떤 식물을 두라는 내용은 없다. 식물 지정을 이 출처에 귀속시키지 말 것.
+
+### 한국민족문화대백과사전 「방위(方位)」 (E0021760)
+- 「정의」는 방위를 "공간의 어떤 방향이 기준 방향에 대해 나타내는 위치를 가리키는 일반용어"로 적었다 — 출처: https://encykorea.aks.ac.kr/Article/E0021760
+- 「내용」은 방위를 둘로 갈라 "지구의 자력(磁力)에 의해 결정되는 자연과학적 방위 곧 기하학적 공간과 연결되며, 또 한편으로는 비등질적 신화적 방위 곧 신화―주술적 공간과 연결된다"고 적었다 — 출처: https://encykorea.aks.ac.kr/Article/E0021760
+- 이어서 "기하학적 방위와 신화―주술적 방위는 상징적 공간 인식의 형태 안에서 극히 대조적인 상이한 존재의미를 갖는다. 전자가 실용적 효용성을 추구하는 데 반해, 후자는 전자를 방위의 실제로 수용하면서 존재론적 의미 부여를 통한 공간의 질서화를 추구하기 때문이다"라고 적었다 — 출처: https://encykorea.aks.ac.kr/Article/E0021760
+
+### 농촌진흥청 국립원예특작과학원 「식물의 실내 공기정화 원리」
+- "식물에 의한 공기정화 원리는 첫째, 잎과 뿌리쪽 미생물의 흡수에 의한 오염물질 제거이다. 잎에 흡수 된 오염물질은 광합성의 대사산물로 이용되고, 화분 토양내로 흡수된 것은 뿌리부분의 미생물에 의해 제거된다"고 적었다 — 출처: https://www.nihhs.go.kr/usr/persnal/Air.do?t_cd=2
+- "잎에 광량을 높이면 광합성속도가 증가하여 제거능력이 높아지고, 화분에 실내 오염물질을 자 주 처리할수록 뿌리부분에 관련 미생물이 증가하여 제거능력이 우수해진다"고 적었다 — 출처: https://www.nihhs.go.kr/usr/persnal/Air.do?t_cd=2
+- "포름알데히드 제거 능력은 양치류가 가장 우수하고, 그 다음이 허브식물, 그리고 자생식물과 관엽식물이었다"고 적었다 — 출처: https://www.nihhs.go.kr/usr/persnal/Air.do?t_cd=2
+- 화분 표면 덮기(지피)에 대해 "뿌리부분에 공기가 원활히 접촉할 수 있는 소재가 좋기 때문에 모래보다는 식물 체가 좋다. 모래 중에는 가는 모래보다 굵은 모래가 우수하고, 식물체 중에서는 살아있는 식물체에 의한 지피가 우수하다"고 적었다 — 출처: https://www.nihhs.go.kr/usr/persnal/Air.do?t_cd=2
+
+### 농촌진흥청 국립원예특작과학원 「공기정화식물 생활공간 배치」
+- 수량 기준: "아파트 108㎡에서 거실 넓이가 약 20㎡이며 이 공간에 거주하는 사람이 실질적인 새집증후군 완화 효과를 보기 위해서는 화분을 포함한 식물의 높이가 1m이상인 큰 식물일 경우 3.6개, 중간크기의 식 물은 7.2개, 30cm이하의 작은 식물은 10.8개를 놓아야 한다" — 출처: https://www.nihhs.go.kr/usr/persnal/Air.do?t_cd=5
+  - 🔴 조건: 이 숫자는 **새집증후군 완화(공기정화)** 기준이지 풍수 기준이 아니다.
+- 거실: "거실에 좋은 공기정화 식물로는 아레카야자, 인도고무나무, 드라세나, 디펜바키아 등이 있다" — 출처: https://www.nihhs.go.kr/usr/persnal/Air.do?t_cd=5
+- 침실: "침실에 맞는 식물로는 호접란, 선인장, 다육식물 등이 있다. 이들 식물은 탄소 동화 작용을 밤에 하기 때문에 밤에 이산화탄소를 흡수하는 식물이다" — 출처: https://www.nihhs.go.kr/usr/persnal/Air.do?t_cd=5
+- 공부방: "공부방에 좋은 식물로는 팔 손이나무, 개운죽, 로즈마리 등이 있다. 발생된 음이온은 이동거리가 짧기 때문에 책상 위 등 가까운 곳에 두는 것이 좋다" — 출처: https://www.nihhs.go.kr/usr/persnal/Air.do?t_cd=5
+- 주방: "주방은 ... 가스레인지를 사용해 요리하기 때문에 다른 곳보다 이산화탄소와 일산화탄소의 발생량이 많다. 또한 거실보다 어둡기 때문에 음지에서도 잘 자라는 식물을 놓는 것이 좋다. 주방에 좋은 식물로는 스킨답서스, 안스리움 등이 있다" — 출처: https://www.nihhs.go.kr/usr/persnal/Air.do?t_cd=5
+- 화장실: "화장실에는 각종 냄새와 암모니아 가스를 제거하는 능력이 뛰어난 식물인 관음죽, 테이블야자 등을 두 는 것이 좋다. 특히 관음죽은 암모니아를 흡수하는 능력이 뛰어난 식물이다" — 출처: https://www.nihhs.go.kr/usr/persnal/Air.do?t_cd=5
+- 현관: 요약 도표에 "현관:실외 대기오염물질 제거기능이 우수한식물, 벤자민고무나무, 스파티필럼 등"으로 적혔다 — 출처: https://www.nihhs.go.kr/usr/persnal/Air.do?t_cd=5
+- 베란다: "베란다에는 휘발성유해물질(VOC) 제거능력이 우수한 식물 중에서 특히 햇볕을 많이 필요로 하는 식물로 꽃이 피는 식물이나, 허브류, 자생식물 등을 배치하는 것이 좋다. 이러한 식물로는 팔손이나무, 분화국화, 시클라멘, 꽃베고니아, 허브류 등이 있다" — 출처: https://www.nihhs.go.kr/usr/persnal/Air.do?t_cd=5
+- 배치 원칙: "거실, 주방, 침실 등의 생활공간은 각각 사용목적이 다르고, 또한 식물을 기르기 위한 광 등의 환경조건도 차이가 있다. 이러한 공간별 특성을 고려하여 공기정화 효과가 우수한 기능성 실내식물을 배치하는 것이 좋다" — 출처: https://www.nihhs.go.kr/usr/persnal/Air.do?t_cd=5
+
+### 농촌진흥청 국립원예특작과학원 「실내정원 관리」
+- 물주기: "물주는 시기는 손가락으로 흙 표면을 약 1cm 깊이를 만져서 물기가 만져지면 물을 주지 않은 것이 좋다" — 출처: https://www.nihhs.go.kr/usr/persnal/Air.do?t_cd=4
+- 물 주는 요령: "첫째가 물이 밑으로 줄줄 세어 나올 만큼 흠뻑 주는 것이다" / "물의 온도는 실내온도와 비슷한 것이 좋다" — 출처: https://www.nihhs.go.kr/usr/persnal/Air.do?t_cd=4
+- 광: "창가나 베란다의 자연광이 들어오는 곳에 실내정원을 배치하는 것이 좋다. 일반 가정의 경우 실내공산에서 식물이 자라기에 광량이 부족한 경우가 많다" / 조성 초기 "약 1개월 정도는 가능한 광을 많아 실내 광도에 순화 될 수 있도록 하여야 한다" — 출처: https://www.nihhs.go.kr/usr/persnal/Air.do?t_cd=4
+- 온도: "실내식물은 대부분 열대나 아열대가 원산지로 겨울철에도 12℃이하로 내려가지 않도록 관리하는 것이 좋다" / "그리고 냉난방장치 가까이 두지 않는 것이 좋다" — 출처: https://www.nihhs.go.kr/usr/persnal/Air.do?t_cd=4
+- 중심 식물 목록: "주로 이용되는 종류로는 아레카야자, 드라세나, 쉐플레라, 아라우카리아, 파키라, 벤자민고무나무, 종려죽 등이 있다" — 출처: https://www.nihhs.go.kr/usr/persnal/Air.do?t_cd=4
+- 중간 식물 목록: "키가 큰 식물들에 의해 가려져 광량이 부족해도 자랄 수 있는 식물종류에는 디펜바키아, 관음죽, 치자나무, 남천, 코르딜리네, 스파티필럼, 백량금, 산세베리아, 크로톤, 포인세치아 등이 있다" — 출처: https://www.nihhs.go.kr/usr/persnal/Air.do?t_cd=4
+- 병해충: "가정에서 자주 발생하는 충해는 응애, 깍지벌레, 진딧물 등으로 고온 건조한 환경에서 많이 발생함으로 스프레이나 환기를 자주해주고" — 출처: https://www.nihhs.go.kr/usr/persnal/Air.do?t_cd=4
+
+### 농촌진흥청 농사로 「미세 먼지 먹는 '천연 공기청정기' 초록잎 식물 키우세요」 (국립원예특작과학원 도시농업과)
+- "2015년에는 빈방에 미세 먼지를 투입하고 식물을 놓은 뒤 4시간 뒤 미세먼지를 측정한 결과, 산호수를 들여 놓은 방은 미세 먼지가 70% 줄었고, 벵갈고무나무가 있던 방은 67% 줄었습니다" — 출처: https://www.rda.go.kr/middlePopOpenPopNongsaroDBView.do?no=1379
+  - 🔴 조건: **밀폐된 실험 조건**이며 4시간 측정값이다. 생활 공간의 상시 효과로 옮겨 말하지 말 것.
+- "2016년에는 관엽식물 10종과 공기 중에 매달아 놓는 틸란드시아 3종에 대해 미세 먼지 제거 효과를 실험한 결과, 단위면적 당 미세 먼지 제거 효율은 아이비가 가장 우수했고, 네프로네피스, 스킨답서스, 넉줄고사리 순으로 나타났습니다" — 출처: https://www.rda.go.kr/middlePopOpenPopNongsaroDBView.do?no=1379
+- "미세 먼지는 흙에 있는 미생물의 먹이가 돼 사라지므로 수경재배 식물보다는 토양재배 식물을 키워야 효과가 있습니다" — 출처: https://www.rda.go.kr/middlePopOpenPopNongsaroDBView.do?no=1379
+- "화분에 모래나 자갈을 덮으면 미세먼지 제거율이 떨어지므로 흙을 노출시키거나 죽은 식물을 덮어 주면 좋은 효과를 보실 수 있습니다" — 출처: https://www.rda.go.kr/middlePopOpenPopNongsaroDBView.do?no=1379
+- "미세 먼지 제거 효과를 얻으려면 평균적으로 3.3㎡에 1개의 화분을 놓아야 합니다. 실험에 따르면 19.8㎡ 거실에 작은 식물은 10.8개, 중간 식물은 7.2개, 큰 식물은 3.6개를 놓으면 공기정화 효과를 얻을 수 있었습니다" — 출처: https://www.rda.go.kr/middlePopOpenPopNongsaroDBView.do?no=1379
+- "미세 먼지 제거를 목적으로 식물을 키울 때는 잎을 닦아 미세 먼지를 제거하는 것을 잊지 않아야 합니다" — 출처: https://www.rda.go.kr/middlePopOpenPopNongsaroDBView.do?no=1379
+- 개운죽: "개운죽은 환경에 크게 영향을 받지 않기 때문에 무척 키우기 쉬운 식물입니다. 햇볕이 들지 않는 곳에서도 무럭무럭 잘 자랍니다. 또 흙에서도 잘 자라고 물에서도 잘 자랍니다. 즉 수경재배가 가능하다는 뜻입니다" — 출처: https://www.rda.go.kr/middlePopOpenPopNongsaroDBView.do?no=1379
+- 테이블야자: "직사광선을 받으면 잎이 말라버립니다. 토양 표면이 말랐을 때 충분한 양의 물을 줍니다. 보통 일주일에 한 번이 적당합니다" — 출처: https://www.rda.go.kr/middlePopOpenPopNongsaroDBView.do?no=1379
+
+### ASPCA Animal Poison Control 「Snake Plant」
+- Common Names: "Golden Bird's Nest, Mother-in-Law's Tongue, Good Luck Plant" / Scientific Name: Sansevieria trifasciata / Family: Agavaceae — 출처: https://www.aspca.org/pet-care/animal-poison-control/toxic-and-non-toxic-plants/snake-plant
+- Toxicity: "Toxic to Dogs, Toxic to Cats" / Toxic Principle: "Saponins" / Clinical Signs: "Nausea, vomiting, diarrhea." — 출처: https://www.aspca.org/pet-care/animal-poison-control/toxic-and-non-toxic-plants/snake-plant
+  - 🔴 조건: **반려동물이 먹었을 때**의 증상이다. 사람이 같은 방에 두는 것만으로 문제가 된다는 뜻이 아니다.
+
+### ASPCA Animal Poison Control 「Golden Pothos」
+- Common Names: "Pothos, Devil's Ivy, Taro Vine, Ivy Arum" / Scientific Name: Epipremnum aureum / Family: Araceae — 출처: https://www.aspca.org/pet-care/animal-poison-control/toxic-and-non-toxic-plants/golden-pothos
+- Toxicity: Toxic to Dogs and Cats / Toxic Principle: "Insoluble calcium oxalates" / Clinical Signs: "Oral irritation, intense burning and irritation of mouth, tongue and lips, excessive drooling, vomiting, difficulty swallowing." — 출처: https://www.aspca.org/pet-care/animal-poison-control/toxic-and-non-toxic-plants/golden-pothos
+  - 🔴 조건: 위와 같음. 섭취 시 증상이다.
+
+## 확인하지 못한 것 (본문에서 사실로 쓰지 말 것)
+
+- 금전수(Zamioculcas zamiifolia)를 특정 방위에 두면 재물운이 좋아진다는 주장 — 공적 자료에서 확인되지 않았다. 이 연결은 잎 모양과 이름에서 온 통용 해석으로만 서술한다.
+- "동남쪽이 재물 방위"라는 지정 — 윤도 항목에서 확인되는 것은 남동에 팔괘 손(巽)이 배치된다는 사실까지다. 재물과의 연결은 확인하지 못했다.
+- 산세베리아가 밤에 산소를 내놓는다는 널리 도는 주장 — 국립원예특작과학원 자료가 밤에 이산화탄소를 흡수하는 식물로 든 것은 호접란·선인장·다육식물이며, 산세베리아는 중간 크기 식물 목록에 있다. 두 서술을 합치지 말 것.
+- 식물 배치로 금전적 이익이 생긴다는 취지의 서술 — 어떤 자료에서도 확인되지 않았고 쓰지 않는다.
+
+## SERP 판정
+
+- 주 키워드 "풍수 식물" 상위 점유자는 다음 카카오 콘텐츠·티스토리·개인 블로그였다. 정부·위키·병원 같은 강한 점유자는 없었다 → 정면 작성 가능(ENTER 성격).
+- keyword-results.json(2026-08-04 생성)의 saju-blog 추천 1~3위는 관상 보는법(65·LOW)·손금 보는법(65·ENTER)·사주 보는법(65·ENTER)이나, 세 축 모두 이 레포에 55편·22편 규모로 이미 깔려 있어 primary 충돌이 난다. 풍수 축은 7/10~7/31에 8편이 나갔고 식물만 비어 있었다.
+
+## 게이트
+
+- check-duplicate-post.py → exit 0 (최대 유사 30%: 거실 풍수·원룸 풍수)
+- check-keyword-overlap.py "풍수 식물" "금전수 풍수" "산세베리아 풍수" → exit 0 (매칭 0)
+- check-crosssite-overlap.py → exit 0
