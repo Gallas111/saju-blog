@@ -93,6 +93,37 @@ def frontmatter(text):
     return text.split('---', 2)[1] if text.startswith('---') and text.count('---') >= 2 else ''
 
 
+def primary_of(head):
+    """그 글이 겨냥한 단 하나의 쿼리를 뽑는다 — 자기잠식 판정의 1차 기준.
+
+    🔴 2026-08-05 수리: 예전에는 (1)(2) 두 갈래만 봤다. 그런데 네트워크에는 keywords 를
+    **평면 블록 리스트**로 쓰는 레포가 있고(ai-blog 766 · health 263 · easy 258 · baby 163),
+    그 글들은 primary 가 늘 빈 문자열이라 **자기잠식 검사에서 통째로 빠져 있었다.**
+    실제로 그날 blog-audit 은 self-cannibal 위반 0 을 냈는데, 폴백을 넣고 재감사하니
+    ai 22쌍 · easy 8쌍 · baby 1쌍이 나왔다.
+
+    권위 구현은 `~/scripts/blog_frontmatter.py` 의 parse_head 다. blog-audit 은 9레포에서
+    의존성 없이 도는 것이 설계라 여기에 최소한만 복제한다. **한쪽을 고치면 다른 쪽도 고쳐라.**
+    🔴 tags 의 첫 항목은 폴백에 넣지 마라 — 주제 라벨이지 겨냥 쿼리가 아니라서
+    tokennara 에서 '딥다이브' 가 수십 편의 primary 가 돼 상시 오탐을 낸다.
+    """
+    m = re.search(r"^\s*primary:\s*['\"]?([^'\"\n]+)", head, re.M)          # (1) 중첩 객체
+    if m:
+        return m.group(1).strip()
+    m = re.search(r"^targetKeyword:\s*['\"]?([^'\"\n]+)", head, re.M)       # (2) targetKeyword
+    if m:
+        return m.group(1).strip()
+    b = re.search(r"^keywords:[ \t]*$\n((?:[ \t]*-[ \t]+.*\n?)+)", head, re.M)  # (3) 평면 블록 리스트
+    if b:
+        it = re.match(r"^[ \t]*-[ \t]+(.*)$", b.group(1).split('\n')[0])
+        if it:
+            return it.group(1).strip().strip('"\'')
+    m = re.search(r"^keywords:[ \t]*\[([^\]]+)\]", head, re.M)              # (4) 인라인 배열
+    if m:
+        return m.group(1).split(',')[0].strip().strip('"\'')
+    return ''
+
+
 def pixel_hash(path):
     try:
         from PIL import Image
@@ -122,12 +153,10 @@ class Repo:
             m = re.search(r"^slug:\s*['\"]?([^'\"\n]+)", head, re.M)
             slug = m.group(1).strip() if m else re.sub(r'^\d{4}-\d{2}-\d{2}-', '', os.path.splitext(os.path.basename(f))[0])
             tm = re.search(r'^title:\s*(.+)$', head, re.M)
-            pm = re.search(r"^\s*primary:\s*['\"]?([^'\"\n]+)", head, re.M) or \
-                 re.search(r"^targetKeyword:\s*['\"]?([^'\"\n]+)", head, re.M)
             self.posts.append({
                 'slug': slug,
                 'title': (tm.group(1).strip().strip('"\'') if tm else ''),
-                'primary': (pm.group(1).strip() if pm else ''),
+                'primary': primary_of(head),
                 'noindex': bool(re.search(r'^noindex:\s*true', head, re.M)),
                 'rel': os.path.relpath(f, self.root).replace(os.sep, '/'),
                 'text': t, 'head': head,
@@ -385,6 +414,18 @@ def canary():
     W(os.path.join(repo, 'content', 'posts', 'b.mdx'),
       '---\nslug: b\ntitle: "정상 제목"\nimage: /images/posts/b-thumb.webp\nkeywords:\n  primary: 같은 키워드\n---\n\n'
       '![y](/images/posts/b-thumb.webp)\n보건복지부 고시 제2025-XXX호.\n')
+    # 🔴 회귀 케이스 (2026-08-05) — keywords 를 **평면 블록 리스트**로 쓰는 글끼리의 자기잠식.
+    # 이 두 편이 안 잡히면 primary_of() 의 (3)번 폴백이 죽은 것이고, 그러면
+    # ai·health·easy·baby 1,400편+ 이 자기잠식 검사에서 통째로 빠진다. 지우지 마라.
+    Image.new('RGB', (32, 32), (1, 2, 3)).save(os.path.join(img, 'c-thumb.webp'))
+    Image.new('RGB', (32, 32), (4, 5, 6)).save(os.path.join(img, 'd-thumb.webp'))
+    W(os.path.join(repo, 'content', 'posts', 'c.mdx'),
+      '---\nslug: c\ntitle: "평면 리스트 A"\nimage: /images/posts/c-thumb.webp\n'
+      'keywords:\n  - 평면 같은키워드\n  - 부차 키워드\n---\n\n![x](/images/posts/c-thumb.webp)\n')
+    W(os.path.join(repo, 'content', 'posts', 'd.mdx'),
+      '---\nslug: d\ntitle: "평면 리스트 B"\nimage: /images/posts/d-thumb.webp\n'
+      'keywords:\n  - 평면 같은 키워드\n  - 다른 키워드\n---\n\n![y](/images/posts/d-thumb.webp)\n')
+
     W(os.path.join(repo, 'src', 'page.tsx'),
       'export function m(post){return {openGraph:{images:[{url: post.frontmatter.image, width: 1200, height: 630}]}}}\n')
 
@@ -398,7 +439,8 @@ def canary():
     got = {c[0]: c[3] for c in res.checks}
     expect = {
         'orphan': 1, 'broken-ref': 1, 'pixel-dup': 1, 'thumb-missing': 0,
-        'self-cannibal': 1, 'placeholder': 1, 'draft-artifact': 1,
+        # 🔴 2 = 중첩 primary 쌍(a·b) + 평면 블록 리스트 쌍(c·d). 1 이 나오면 (3)번 폴백이 죽은 것이다.
+        'self-cannibal': 2, 'placeholder': 1, 'draft-artifact': 1,
         'og-hardcode': 1, 'spam-title(warn)': 1,
     }
     ok = True
