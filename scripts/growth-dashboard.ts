@@ -1,11 +1,11 @@
 /**
- * 성장 대시보드 수집기 — GSC(들어오기 전) + GA4(들어온 뒤)를 한 화면에 붙인다.
+ * 성장 대시보드 수집기 — GSC(들어오기 전)를 11사이트 한 화면에 모은다.
  *
  * 왜 만들었나: 방문자·페이지뷰만 보는 대시보드는 "어디를 보완할지"를 알려주지 않는다.
  * 진단은 세 갈래로 갈리는데, 그 갈림을 만들려면 GSC 가 있어야 한다.
  *   1) 노출이 아예 없다            → 색인 문제      (지표: 노출 잡힌 페이지 / 사이트맵 URL)
  *   2) 노출은 있는데 클릭이 0      → 제목·설명 문제 (지표: imp>=THRESH & clicks=0 페이지)
- *   3) 들어오는데 금방 나간다      → 본문 문제      (지표: GA4 참여율·참여시간)
+ *   3) 들어오는데 금방 나간다      → 본문 문제      (여기엔 없다. 자체 비콘 대시보드가 본다)
  * 그리고 키워드 확장 후보는 "평균순위 11~20 + 노출 있음" 쿼리다(한 걸음 남은 것).
  *
  * 사용:
@@ -19,7 +19,8 @@
  *
  * 🔴 창(window)을 바꾸면 값이 바뀐다. 회차 간 비교는 반드시 같은 창으로 할 것.
  * 🔴 GSC 는 희소 쿼리를 익명화하므로 쿼리 카운트는 항상 하한이다.
- * 🔴 GA4 는 서비스계정 권한이 있어야 붙는다. 없으면 GSC 만으로도 리포트는 정상 생성된다.
+ * 🔴 "들어온 뒤"(체류·스크롤·이탈)는 여기서 다루지 않는다. GA4 는 쓰지 않기로 했고(2026-08-06 결정),
+ *    그 자리는 자체 비콘 대시보드가 맡는다 → 사이트/blog-analytics (Worker + D1).
  */
 import { google } from 'googleapis';
 import * as fs from 'fs';
@@ -34,21 +35,20 @@ type Site = {
   name: string;
   siteUrl: string;     // GSC 속성
   repoDir: string;     // 사이트맵을 읽기 위한 레포 폴더명 (🔴 lottohanpan = lotto)
-  ga4Measurement: string;
 };
 
 const SITES: Site[] = [
-  { name: 'ai-blog',     siteUrl: 'sc-domain:how-toai.com',              repoDir: 'ai-blog',     ga4Measurement: 'G-1ERJRSYWXP' },
-  { name: 'saju-blog',   siteUrl: 'https://www.sajubokastory.com/',      repoDir: 'saju-blog',   ga4Measurement: 'G-P8GS2YYFC2' },
-  { name: 'easy-zetec',  siteUrl: 'sc-domain:easyzetec.com',             repoDir: 'easy-zetec',  ga4Measurement: 'G-DS08DB4NVH' },
-  { name: 'baby-blog',   siteUrl: 'sc-domain:babytodak.com',             repoDir: 'baby-blog',   ga4Measurement: 'G-0G95T32NJX' },
-  { name: 'health-blog', siteUrl: 'https://www.wellnesstodays.com/',     repoDir: 'health-blog', ga4Measurement: 'G-CSP2CW6GH7' },
-  { name: 'bukbukstock', siteUrl: 'sc-domain:bukbukstock.com',           repoDir: 'bukbukstock', ga4Measurement: 'G-3TX4NXQCYP' },
-  { name: 'coinday',     siteUrl: 'sc-domain:coindaynow.com',            repoDir: 'coinday',     ga4Measurement: 'G-DN1HXH761P' },
-  { name: 'quicktools',  siteUrl: 'sc-domain:toolkio.com',               repoDir: 'quicktools',  ga4Measurement: 'G-F13BRWNM09' },
-  { name: 'tokennara',   siteUrl: 'sc-domain:tokennara.com',             repoDir: 'tokennara',   ga4Measurement: 'G-EH74HFTEBQ' },
-  { name: 'altnara',     siteUrl: 'sc-domain:altnara.com',               repoDir: 'altnara',     ga4Measurement: 'G-FP9Y6XFQ19' },
-  { name: 'lottohanpan', siteUrl: 'sc-domain:lottohanpan.com',           repoDir: 'lotto',       ga4Measurement: 'G-J24GKYX7JM' },
+  { name: 'ai-blog',     siteUrl: 'sc-domain:how-toai.com',              repoDir: 'ai-blog' },
+  { name: 'saju-blog',   siteUrl: 'https://www.sajubokastory.com/',      repoDir: 'saju-blog' },
+  { name: 'easy-zetec',  siteUrl: 'sc-domain:easyzetec.com',             repoDir: 'easy-zetec' },
+  { name: 'baby-blog',   siteUrl: 'sc-domain:babytodak.com',             repoDir: 'baby-blog' },
+  { name: 'health-blog', siteUrl: 'https://www.wellnesstodays.com/',     repoDir: 'health-blog' },
+  { name: 'bukbukstock', siteUrl: 'sc-domain:bukbukstock.com',           repoDir: 'bukbukstock' },
+  { name: 'coinday',     siteUrl: 'sc-domain:coindaynow.com',            repoDir: 'coinday' },
+  { name: 'quicktools',  siteUrl: 'sc-domain:toolkio.com',               repoDir: 'quicktools' },
+  { name: 'tokennara',   siteUrl: 'sc-domain:tokennara.com',             repoDir: 'tokennara' },
+  { name: 'altnara',     siteUrl: 'sc-domain:altnara.com',               repoDir: 'altnara' },
+  { name: 'lottohanpan', siteUrl: 'sc-domain:lottohanpan.com',           repoDir: 'lotto' },
 ];
 
 const fmt = (d: Date) => d.toISOString().split('T')[0];
@@ -161,71 +161,16 @@ function totals(rows: Row[]) {
   return { clicks, impressions, ctr: impressions ? clicks / impressions : 0, position: wpos };
 }
 
-// ── GA4 (권한 없으면 조용히 건너뛴다) ───────────────────────────────────────
-type GaResult = { ok: boolean; reason?: string; propertyId?: string; sessions?: number; engagementRate?: number; avgEngagementSec?: number };
-
-async function resolveGa4Properties(auth: any): Promise<{ map: Record<string, string>; error?: string }> {
-  try {
-    const admin = google.analyticsadmin({ version: 'v1beta', auth });
-    const summaries = (await admin.accountSummaries.list({ pageSize: 200 })).data.accountSummaries || [];
-    const map: Record<string, string> = {};
-    for (const acc of summaries) {
-      for (const p of acc.propertySummaries || []) {
-        const prop = p.property!; // "properties/123456"
-        try {
-          const streams = (await admin.properties.dataStreams.list({ parent: prop, pageSize: 50 })).data.dataStreams || [];
-          for (const s of streams) {
-            const mid = s.webStreamData?.measurementId;
-            if (mid) map[mid] = prop.split('/')[1];
-          }
-        } catch { /* 스트림 접근 불가 속성은 건너뛴다 */ }
-      }
-    }
-    return { map };
-  } catch (e: any) {
-    return { map: {}, error: e?.errors?.[0]?.message || e?.message || String(e).slice(0, 200) };
-  }
-}
-
-async function ga4Site(auth: any, propertyId: string): Promise<GaResult> {
-  try {
-    const data = google.analyticsdata({ version: 'v1beta', auth });
-    const r = await data.properties.runReport({
-      property: `properties/${propertyId}`,
-      requestBody: {
-        dateRanges: [{ startDate: START, endDate: END }],
-        metrics: [{ name: 'sessions' }, { name: 'engagementRate' }, { name: 'userEngagementDuration' }],
-      },
-    });
-    const v = r.data.rows?.[0]?.metricValues || [];
-    const sessions = parseFloat(v[0]?.value || '0');
-    return {
-      ok: true,
-      propertyId,
-      sessions,
-      engagementRate: parseFloat(v[1]?.value || '0'),
-      avgEngagementSec: sessions ? parseFloat(v[2]?.value || '0') / sessions : 0,
-    };
-  } catch (e: any) {
-    return { ok: false, reason: e?.errors?.[0]?.message || e?.message || String(e).slice(0, 200) };
-  }
-}
-
 // ── 본체 ───────────────────────────────────────────────────────────────────
 async function main() {
   const scAuth = new google.auth.GoogleAuth({ keyFile: KEY_FILE_PATH, scopes: ['https://www.googleapis.com/auth/webmasters.readonly'] });
   const sc = google.webmasters({ version: 'v3', auth: scAuth as any });
 
-  const gaAuth = new google.auth.GoogleAuth({ keyFile: KEY_FILE_PATH, scopes: ['https://www.googleapis.com/auth/analytics.readonly'] });
-  const ga4 = await resolveGa4Properties(gaAuth as any);
-  if (ga4.error) console.log(`ℹ GA4 미연결: ${ga4.error.slice(0, 120)}`);
 
   const report: any = {
     generatedAt: new Date().toISOString(),
     window: { start: START, end: END, prevStart: PREV_START, prevEnd: PREV_END, country: COUNTRY },
     thresholds: { noClickMinImpressions: NOCLICK_MIN_IMP, strikingMinImpressions: STRIKING_MIN_IMP },
-    ga4Connected: !ga4.error,
-    ga4Error: ga4.error || null,
     sites: [] as any[],
   };
 
@@ -274,17 +219,13 @@ async function main() {
         .slice(0, 15)
         .map(r => ({ url: r.keys?.[0] || '', clicks: r.clicks || 0, impressions: r.impressions || 0, position: +(r.position || 0).toFixed(1) }));
 
-      const propId = ga4.map[s.ga4Measurement];
-      const ga = propId ? await ga4Site(gaAuth as any, propId) : { ok: false, reason: ga4.error ? 'API 미사용 설정' : '이 측정 ID에 접근 권한 없음' };
-
       report.sites.push({
-        name: s.name, siteUrl: s.siteUrl, ga4Measurement: s.ga4Measurement,
+        name: s.name, siteUrl: s.siteUrl,
         totals: { ...now, prevClicks: prev.clicks, prevImpressions: prev.impressions },
         index: { postCount, sitemapSource: idx.source, pagesWithImpressions, coverage: postCount ? pagesWithImpressions / postCount : null },
         queryCounts: { total: queries.length, page1: page1.length, striking: striking.length },
         anchorRowsMerged,
         noClick, striking, topPage1, topPages,
-        ga4: ga,
       });
       console.log(`imp ${now.impressions} · clk ${now.clicks} · 색인표면 ${pagesWithImpressions}/${postCount ?? '?'}`);
     } catch (e: any) {
@@ -301,7 +242,6 @@ async function main() {
 
   console.log(`\n✅ ${jsonPath}`);
   console.log(`✅ ${htmlPath}  ← 더블클릭으로 열면 됩니다`);
-  if (!report.ga4Connected) console.log(`\n🔶 GA4 는 아직 안 붙었습니다. HTML 상단 안내 참조.`);
 }
 
 // ── HTML (자체완결 · 외부 요청 0) ───────────────────────────────────────────
@@ -328,9 +268,6 @@ function renderHtml(r: any): string {
   const siteRows = ok.map((s: any) => {
     const cov = s.index.coverage;
     const covCls = cov === null ? 'd0' : cov < 0.2 ? 'bad' : cov < 0.5 ? 'warn' : 'good';
-    const ga = s.ga4.ok
-      ? `<td class="num">${s.ga4.sessions}</td><td class="num">${pct(s.ga4.engagementRate || 0)}</td><td class="num">${Math.round(s.ga4.avgEngagementSec || 0)}초</td>`
-      : `<td class="num na" colspan="3">미연결</td>`;
     return `<tr>
       <td><b>${esc(s.name)}</b></td>
       <td class="num">${s.totals.impressions.toLocaleString()} ${delta(s.totals.impressions, s.totals.prevImpressions)}</td>
@@ -340,7 +277,6 @@ function renderHtml(r: any): string {
       <td class="num ${covCls}">${s.index.pagesWithImpressions}/${s.index.postCount ?? '?'}${cov !== null ? ` <small>(${pct(cov)})</small>` : ''}</td>
       <td class="num">${s.queryCounts.page1}</td>
       <td class="num">${s.queryCounts.striking}</td>
-      ${ga}
     </tr>`;
   }).join('');
 
@@ -374,16 +310,6 @@ function renderHtml(r: any): string {
       </div>
     </section>`;
   }).join('');
-
-  const gaNotice = r.ga4Connected ? '' : `<div class="notice">
-    <b>GA4 가 아직 안 붙었습니다.</b> 지금 화면은 <b>GSC(들어오기 전)</b> 만으로 그린 것이고, 이것만으로도 색인·제목·키워드 판단은 됩니다.
-    "들어온 뒤" 지표(세션·참여율·참여시간)를 채우려면 두 가지가 필요합니다.
-    <ol>
-      <li>GCP 프로젝트 <code>poised-climate-491505-p6</code> 에서 <b>Google Analytics Data API</b> 와 <b>Admin API</b> 사용 설정</li>
-      <li>각 GA4 속성 → 관리 → 속성 액세스 관리에서 <code>blog-growth-report@poised-climate-491505-p6.iam.gserviceaccount.com</code> 를 <b>뷰어</b>로 추가</li>
-    </ol>
-    <small>사유: ${esc(r.ga4Error || '')}</small>
-  </div>`;
 
   return `<!doctype html><html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -422,11 +348,10 @@ td.txt{max-width:280px;overflow:hidden;text-overflow:ellipsis}
 
 <div class="legend">
 <b>읽는 법</b> — 진단은 세 갈래로 갈립니다.
-<b>색인 표면</b>이 낮으면 <b>색인 문제</b>(글이 검색에 안 뜸) · 노출은 있는데 클릭이 0이면 <b>제목·설명 문제</b> · 들어오는데 참여시간이 짧으면 <b>본문 문제</b>입니다.
+<b>색인 표면</b>이 낮으면 <b>색인 문제</b>(글이 검색에 안 뜸) · 노출은 있는데 클릭이 0이면 <b>제목·설명 문제</b> 입니다. 들어온 뒤(체류·스크롤·이탈)는 자체 비콘 대시보드에서 봅니다.
 키워드를 늘릴 자리는 <b>한 걸음 남은 키워드(11~20위)</b>입니다.
 </div>
 
-${gaNotice}
 
 <div class="kpis">
   <div class="kpi"><div class="l">총 노출</div><div class="v">${net.impressions.toLocaleString()}</div><div>${delta(net.impressions, net.prevImpressions)}</div></div>
@@ -440,7 +365,6 @@ ${gaNotice}
 <thead><tr>
 <th>사이트</th><th style="text-align:right">노출</th><th style="text-align:right">클릭</th><th style="text-align:right">CTR</th><th style="text-align:right">평균순위</th>
 <th style="text-align:right">색인 표면</th><th style="text-align:right">1p 쿼리</th><th style="text-align:right">11~20위</th>
-<th style="text-align:right">세션</th><th style="text-align:right">참여율</th><th style="text-align:right">참여시간</th>
 </tr></thead>
 <tbody>${siteRows}</tbody></table></div>
 
