@@ -52,3 +52,6 @@ next-env.d.ts
 quarantine/
 
 *.gen.json
+
+# 성장 대시보드 산출물(로컬 전용)
+/reports/
