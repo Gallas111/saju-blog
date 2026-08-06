@@ -46,6 +46,19 @@ BASE = r'C:\Users\owner\OneDrive\바탕 화면\사이트'
 REPOS = ['ai-blog', 'saju-blog', 'coinday', 'bukbukstock', 'tokennara',
          'altnara', 'easy-zetec', 'baby-blog', 'health-blog']
 SKIP_DIRS = {'node_modules', '.git', '.next', 'out', 'dist', 'quarantine', '.vercel', 'tmp-build'}
+
+# 🔴🔴 2026-08-06: 생성 매니페스트는 참조원이 아니다 — 고아 검사를 죽이던 진범.
+# `image-dims.json`·sitemap·feed·search-index 는 **콘텐츠에서 파생된 목록**이라 이미지를
+# 나열만 하고 사용하지는 않는다. 그런데 참조원으로 세면 그 목록이 낡아 있는 동안
+# **모든 고아가 "참조됨"으로 위장**된다. 실제 사고: 8/6 에 다른 세션이 고아 48장을 손으로
+# 찾아냈는데 게이트는 같은 시점에 orphan 위반 0 을 냈다(image-dims.json 에 옛 항목이 남아 있었다).
+# 나도 같은 날 인포그래픽 2장에서 같은 증상을 봤다.
+# 🔑 판별 원칙: **파생물은 사용을 증명하지 못한다.** 글이 참조하면 사용이고, 생성 목록이
+# 나열하는 것은 사용이 아니다(그 목록 자체가 낡았을 수 있으므로).
+# 🔴 `manifest.json`(PWA)은 제외 대상이 아니다 — 브라우저가 실제로 그 아이콘을 받아 간다.
+GENERATED_MANIFEST = re.compile(
+    r'(^|/)(image-dims\.json|sitemap[^/]*\.xml|feed\.xml|rss\.xml|atom\.xml|'
+    r'search-index\.json|[^/]*\.gen\.json)$', re.I)
 TEXT_EXT = ('.mdx', '.md', '.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.json',
             '.html', '.css', '.xml', '.txt', '.yml', '.yaml')
 IMG_EXT = ('.webp', '.png', '.jpg', '.jpeg')
@@ -141,6 +154,7 @@ class Repo:
         self.posts = []          # dict(slug,title,primary,noindex,rel,text,head)
         self.images = []         # basename
         self.referenced = set()  # basename (전 레포 텍스트 기준)
+        self.skipped_manifests = []  # 참조원에서 뺀 생성 매니페스트 (검사 투명성용)
         self.load()
 
     def load(self):
@@ -190,6 +204,10 @@ class Repo:
                 if not fn.lower().endswith(TEXT_EXT):
                     continue
                 p = os.path.join(dirpath, fn)
+                rel = os.path.relpath(p, self.root).replace(os.sep, '/')
+                if GENERATED_MANIFEST.search(rel):
+                    self.skipped_manifests.append(rel)
+                    continue  # 파생 목록은 사용을 증명하지 못한다(위 주석 참조)
                 try:
                     if os.path.getsize(p) > 12 * 1024 * 1024:
                         continue
@@ -422,6 +440,15 @@ def canary():
     Image.new('RGB', (32, 32), (10, 20, 30)).save(os.path.join(img, 'a-thumb.webp'))
     Image.new('RGB', (32, 32), (10, 20, 30)).save(os.path.join(img, 'b-thumb.webp'))   # a 와 픽셀 동일
     Image.new('RGB', (32, 32), (99, 88, 77)).save(os.path.join(img, 'orphan-thumb.webp'))  # 고아
+    # 🔴🔴 회귀 케이스 (2026-08-06) — **낡은 생성 매니페스트가 고아를 가리면 안 된다.**
+    # masked-orphan 은 어느 글도 참조하지 않지만 image-dims.json 이 옛 항목을 들고 있다.
+    # 매니페스트 제외가 죽으면 이 고아가 "참조됨"으로 위장돼 orphan 기대값 2 가 1 이 된다.
+    # 실제 사고: 8/6 에 고아 48장이 게이트를 0 으로 통과했다. 지우지 마라.
+    Image.new('RGB', (32, 32), (5, 5, 5)).save(os.path.join(img, 'masked-orphan.webp'))
+    os.makedirs(os.path.join(repo, 'src', 'data'), exist_ok=True)
+    W(os.path.join(repo, 'src', 'data', 'image-dims.json'),
+      '{\n  "/images/posts/masked-orphan.webp": [1200, 630],\n'
+      '  "/images/posts/a-thumb.webp": [1200, 630]\n}\n')
     W(os.path.join(repo, 'content', 'posts', 'a.mdx'),
       '---\nslug: a\ntitle: "🚀 0원 완벽 가이드"\nimage: /images/posts/a-thumb.webp\nkeywords:\n  primary: 같은키워드\n---\n\n'
       '![x](/images/posts/a-thumb.webp)\n![gone](/images/posts/missing.webp)\n잠깐 — 다시 계산해 보자.\n')
@@ -466,7 +493,9 @@ def canary():
         BASE = old
     got = {c[0]: c[3] for c in res.checks}
     expect = {
-        'orphan': 1, 'broken-ref': 1, 'pixel-dup': 1, 'thumb-missing': 0,
+        # 🔴 orphan 2 = orphan-thumb(평범한 고아) + masked-orphan(낡은 image-dims.json 이 가리던 고아).
+        # 1 이 나오면 생성 매니페스트 제외가 죽은 것이다.
+        'orphan': 2, 'broken-ref': 1, 'pixel-dup': 1, 'thumb-missing': 0,
         # 🔴 2 = 중첩 primary 쌍(a·b) + 평면 블록 리스트 쌍(c·d). 1 이 나오면 (3)번 폴백이 죽은 것이다.
         'self-cannibal': 2, 'placeholder': 1, 'draft-artifact': 1,
         'og-hardcode': 1, 'spam-title(warn)': 1,
