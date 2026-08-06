@@ -285,9 +285,23 @@ def audit(repos, fast=False, res=None):
         res.add('u+fffd', name, len(r.posts), len(bad), bad[:10])
 
         # 6) 사이트 내 자기잠식 (색인 열린 글끼리 primary 완전일치)
+        # 🔴 2026-08-06: 리다이렉트된 슬러그를 빼야 한다. `public/_redirects` 에 걸린 슬러그는
+        # 그 URL 로 서빙되지 않으므로(301) 카니발라이즈가 불가능한데, 예전에는 이걸 "색인 열린 글"
+        # 로 세어 **유령 충돌**을 만들었다(8/6 실측: 축 분리 37편 중 1편이 이 경우였다).
+        # noindex 를 빼는 것과 같은 이유다 — 검색에 노출되지 않는 문서는 남을 잡아먹지 못한다.
+        redirected = set()
+        rpath = os.path.join(r.root, 'public', '_redirects')
+        if os.path.exists(rpath):
+            try:
+                for line in io.open(rpath, encoding='utf-8', errors='replace'):
+                    parts = line.split()
+                    if len(parts) >= 2 and parts[0].startswith('/blog/'):
+                        redirected.add(parts[0].rstrip('/').split('/')[-1])
+            except Exception:
+                pass
         prim = defaultdict(list)
         for p in r.posts:
-            if p['noindex'] or not p['primary']:
+            if p['noindex'] or not p['primary'] or p['slug'] in redirected:
                 continue
             prim[norm_key(p['primary'])].append(p['slug'])
         cann = ['primary=%s → %s' % (k[:30], ', '.join(v[:3])) for k, v in prim.items() if len(v) > 1]
@@ -425,6 +439,20 @@ def canary():
     W(os.path.join(repo, 'content', 'posts', 'd.mdx'),
       '---\nslug: d\ntitle: "평면 리스트 B"\nimage: /images/posts/d-thumb.webp\n'
       'keywords:\n  - 평면 같은 키워드\n  - 다른 키워드\n---\n\n![y](/images/posts/d-thumb.webp)\n')
+
+    # 🔴 회귀 케이스 (2026-08-06) — 리다이렉트된 슬러그는 자기잠식으로 세면 안 된다(유령 충돌).
+    # e 는 f 와 primary 가 같지만 _redirects 에 걸려 있어 그 URL 로 서빙되지 않는다.
+    # 이 쌍이 잡히면 리다이렉트 제외가 죽은 것이다. 지우지 마라.
+    Image.new('RGB', (32, 32), (7, 8, 9)).save(os.path.join(img, 'e-thumb.webp'))
+    Image.new('RGB', (32, 32), (10, 11, 12)).save(os.path.join(img, 'f-thumb.webp'))
+    W(os.path.join(repo, 'content', 'posts', 'e.mdx'),
+      '---\nslug: e\ntitle: "리다이렉트된 옛 글"\nimage: /images/posts/e-thumb.webp\n'
+      'keywords:\n  - 리다이렉트 같은키워드\n---\n\n![x](/images/posts/e-thumb.webp)\n')
+    W(os.path.join(repo, 'content', 'posts', 'f.mdx'),
+      '---\nslug: f\ntitle: "현행 글"\nimage: /images/posts/f-thumb.webp\n'
+      'keywords:\n  - 리다이렉트 같은 키워드\n---\n\n![y](/images/posts/f-thumb.webp)\n')
+    os.makedirs(os.path.join(repo, 'public'), exist_ok=True)
+    W(os.path.join(repo, 'public', '_redirects'), '/blog/e  /blog/f  301\n')
 
     W(os.path.join(repo, 'src', 'page.tsx'),
       'export function m(post){return {openGraph:{images:[{url: post.frontmatter.image, width: 1200, height: 630}]}}}\n')
