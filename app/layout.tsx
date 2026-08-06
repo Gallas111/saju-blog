@@ -135,6 +135,8 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-P8GS2YYFC2');`}
         </Script>
+        {/* 자체 방문 집계 비콘 — 쿠키 없음, DOM 변경 없음(CLS 무영향) */}
+        <script async src="https://blog-analytics.j-810.workers.dev/b.js" data-site="saju-blog"></script>
       </body>
     </html>
   );
