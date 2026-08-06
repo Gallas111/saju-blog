@@ -115,29 +115,42 @@ async function gscQuery(sc: any, siteUrl: string, startDate: string, endDate: st
  * 🔴🔴 GSC 의 page 차원은 앵커(#섹션)를 별개 URL 로 센다.
  * 구글이 SERP 에 "섹션으로 바로가기"를 붙이면 같은 글이 `...#소제목` 으로 여러 행 나오고,
  * 클릭은 기본 URL 행에만 쌓여 앵커 행은 전부 클릭 0 이 된다.
- * 이걸 안 합치면 (1) 멀쩡한 글이 "노출 있는데 클릭 0" 으로 오진되고
- *              (2) 노출 잡힌 페이지 수가 부풀려져 색인 표면적이 실제보다 좋아 보인다.
- * 그래서 프래그먼트를 떼고 합산한다. 순위는 노출 가중 평균으로 재계산한다.
+ *
+ * 🔴🔴 그런데 여기서 앵커 노출을 "합치면" 안 된다. 같은 SERP 결과 하나를 섹션 수만큼 세는 꼴이라
+ *      노출이 부풀고 CTR 이 바닥으로 찍힌다. 실측(easy-zetec 2026-08-06):
+ *        기본 URL  2,789 노출 / 28 클릭 → CTR 1.00%
+ *        앵커 9행  8,129 노출 /  0 클릭
+ *        둘을 더하면 10,918 / 28 = 0.26% 로 네 배 왜곡된다.
+ *      그래서 기본 URL 행을 이 결과의 실제 값으로 쓰고, 앵커는 참고치로만 따로 담는다.
+ *      (기본 행이 아예 없는 페이지만 앵커 값으로 대신한다)
  */
 function mergeByPage(rows: Row[]): Row[] {
-  const m = new Map<string, { clicks: number; impressions: number; posWeighted: number }>();
+  type Acc = { base: Row | null; anchorImp: number; anchorClicks: number; anchorRows: number };
+  const m = new Map<string, Acc>();
   for (const r of rows) {
     const raw = r.keys?.[0] || '';
     const url = raw.split('#')[0];
-    const cur = m.get(url) || { clicks: 0, impressions: 0, posWeighted: 0 };
-    const imp = r.impressions || 0;
-    cur.clicks += r.clicks || 0;
-    cur.impressions += imp;
-    cur.posWeighted += (r.position || 0) * imp;
+    const cur = m.get(url) || { base: null, anchorImp: 0, anchorClicks: 0, anchorRows: 0 };
+    if (raw === url) cur.base = r;
+    else { cur.anchorImp += r.impressions || 0; cur.anchorClicks += r.clicks || 0; cur.anchorRows++; }
     m.set(url, cur);
   }
-  return [...m.entries()].map(([url, v]) => ({
-    keys: [url],
-    clicks: v.clicks,
-    impressions: v.impressions,
-    ctr: v.impressions ? v.clicks / v.impressions : 0,
-    position: v.impressions ? v.posWeighted / v.impressions : 0,
-  }));
+  return [...m.entries()].map(([url, v]) => {
+    // 기본 URL 행이 있으면 그것이 이 결과의 실제 노출·클릭이다.
+    // 기본 행이 없는 페이지(앵커로만 잡힌 경우)만 앵커 최댓값으로 대신한다.
+    const b = v.base;
+    const impressions = b ? (b.impressions || 0) : v.anchorImp;
+    const clicks = b ? (b.clicks || 0) : v.anchorClicks;
+    const position = b ? (b.position || 0) : 0;
+    return {
+      keys: [url], clicks, impressions,
+      ctr: impressions ? clicks / impressions : 0,
+      position,
+      anchorImpressions: v.anchorImp,
+      anchorRows: v.anchorRows,
+      baseRowMissing: !b,
+    } as Row & { anchorImpressions: number; anchorRows: number; baseRowMissing: boolean };
+  });
 }
 
 function totals(rows: Row[]) {
