@@ -345,6 +345,26 @@ def audit(repos, fast=False, res=None):
                     dr.append('%s · %s' % (lab, p['rel'][:52]))
         res.add('draft-artifact', name, len(r.posts), len(dr), dr[:10])
 
+        # 8-b) 🔴🔴 MDX 가 JSX 로 파싱하는 한글 꺾쇠 (2026-08-07 신설 · trap#90)
+        # 실제 사고: 본문에 법령 개정 표기를 `"<개정 2008.2.29, …>"` 로 그대로 적었더니
+        # MDX 가 `<개정` 을 JSX 태그명으로 읽고 그다음 숫자에서 죽었다
+        # (Unexpected character `2` after name). prerender 실패는 빌드 전체를 중단시켜
+        # 그 레포의 멀쩡한 글까지 통째로 404 가 된다. 큰따옴표는 MDX 에게 아무 의미가 없다.
+        # ✅ 처방 = 인라인 코드로 감싸기(`` `<개정 …>` ``).
+        # 🔴 판정을 "실제로 깨지는 모양"까지 좁힌다. `<한글` 전부를 잡으면 오탐이 난다:
+        #   `<운명의 지혜>` → 태그 `운명의` + 속성 `지혜` 로 **정상 파싱**된다(라이브 렌더 확인함).
+        #   `<개정 2008.2.29>` → 속성명이 **숫자로 시작**해 파싱 실패한다(이게 8/6 사고).
+        # 그래서 조건 = `<` + 한글 태그명 + 공백 + **숫자**. 속성명은 숫자로 시작할 수 없다.
+        # 코드펜스와 인라인 코드는 벗겨 낸 뒤에 본다(고쳐 놓은 표기를 다시 잡지 않기 위해).
+        jsxh = []
+        for p in r.posts:
+            body = re.sub(r'```.*?```', ' ', p['text'], flags=re.S)   # 코드펜스 제거
+            body = re.sub(r'`[^`\n]*`', ' ', body)                    # 인라인 코드 제거
+            for m in re.finditer(r'<[가-힣][^\s<>]*\s+\d', body):
+                frag = body[m.start():m.start() + 24].replace('\n', ' ')
+                jsxh.append('%s … · %s' % (frag, p['rel'][:46]))
+        res.add('mdx-jsx-hangul', name, len(r.posts), len(jsxh), jsxh[:10])
+
         # 9) og:image 크기 하드코딩
         og = []
         for dirpath, dirnames, filenames in os.walk(os.path.join(r.root, 'src')):
@@ -454,7 +474,17 @@ def canary():
       '![x](/images/posts/a-thumb.webp)\n![gone](/images/posts/missing.webp)\n잠깐 — 다시 계산해 보자.\n')
     W(os.path.join(repo, 'content', 'posts', 'b.mdx'),
       '---\nslug: b\ntitle: "정상 제목"\nimage: /images/posts/b-thumb.webp\nkeywords:\n  primary: 같은 키워드\n---\n\n'
-      '![y](/images/posts/b-thumb.webp)\n보건복지부 고시 제2025-XXX호.\n')
+      '![y](/images/posts/b-thumb.webp)\n보건복지부 고시 제2025-XXX호.\n'
+      # 🔴🔴 회귀 케이스 (2026-08-07) — MDX 가 JSX 로 파싱하는 한글 꺾쇠.
+      # 아래 한 줄이 실제로 8/6 ai-blog 배포를 통째로 죽였다(prerender 실패 → 레포 전체 404).
+      # 큰따옴표로 감싸도 MDX 는 `<개정` 을 태그명으로 읽는다. 정답은 인라인 코드다.
+      # 이 줄이 안 잡히면 mdx-jsx-hangul 검사가 죽은 것이다. 지우지 마라.
+      '시행령 개정 표기는 "<개정 2008.2.29, 2019.7.2>"이다.\n'
+      # 🟢 오탐 방지 짝 ①: 인라인 코드로 감싼 같은 문자열은 잡히면 안 된다.
+      '고친 형태는 `<개정 2008.2.29>` 처럼 감싼다.\n'
+      # 🟢 오탐 방지 짝 ②: `<한글 한글>` 은 태그+속성으로 **정상 파싱**된다(saju 라이브 4건 실측).
+      # 이걸 잡으면 멀쩡한 글이 위반으로 뜬다. 검사를 넓히고 싶어지면 이 줄을 먼저 보라.
+      '<운명의 지혜>에 오신 것을 환영합니다.\n')
     # 🔴 회귀 케이스 (2026-08-05) — keywords 를 **평면 블록 리스트**로 쓰는 글끼리의 자기잠식.
     # 이 두 편이 안 잡히면 primary_of() 의 (3)번 폴백이 죽은 것이고, 그러면
     # ai·health·easy·baby 1,400편+ 이 자기잠식 검사에서 통째로 빠진다. 지우지 마라.
@@ -499,6 +529,9 @@ def canary():
         # 🔴 2 = 중첩 primary 쌍(a·b) + 평면 블록 리스트 쌍(c·d). 1 이 나오면 (3)번 폴백이 죽은 것이다.
         'self-cannibal': 2, 'placeholder': 1, 'draft-artifact': 1,
         'og-hardcode': 1, 'spam-title(warn)': 1,
+        # 🔴 1 = b.mdx 의 `"<개정 …>"` 한 줄만. 2 가 나오면 인라인 코드 제외가 죽어
+        # 정상 표기까지 잡는 것이고, 0 이 나오면 검사 자체가 죽은 것이다.
+        'mdx-jsx-hangul': 1,
     }
     ok = True
     for k, want in expect.items():
